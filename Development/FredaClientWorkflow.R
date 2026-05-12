@@ -81,9 +81,14 @@ CDSTableCheck <- ds.GetDataSetCheck(DataSetName = "CCP.CuratedDataSet",
                                     Module = "CCP",
                                     Stage = "Curated")
 
+Widget.DataSetCheck(RDSCheckData = RDSTableCheck,
+                    CDSCheckData = CDSTableCheck)
+
 # Get curation reports
 CurationReport <- ds.GetCurationReport(Module = "CCP")
 
+Widget.CurationReport(Module = "CCP",
+                      CurationReport = CurationReport)
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -99,7 +104,7 @@ ADSTableCheck <- ds.CheckDataSet(DataSetName = "AugmentedDataSet")
 
 
 
-Widget.ProcessingMonitor(UseVirtualConnections = TRUE)
+#Widget.ProcessingMonitor(UseVirtualConnections = TRUE)
 
 
 
@@ -132,13 +137,13 @@ Exploration <-dsFredaClient::GetExplorationData(OrderList = list(CCP.ADS.Diagnos
                                                                                      "CountDiagnoses")))
 
 
-Proc <- Widget.ServerExplorer(ServerWorkspaceInfo = ServerWorkspaceInfo,
+Widget.ServerExplorer(ServerWorkspaceInfo = ServerWorkspaceInfo,
                               ExplorationData = Exploration,
-                              EnableLiveConnection = TRUE,
+                              EnableLiveConnection = FALSE,
                               RunAutonomously = TRUE,
-                              UseVirtualConnections = TRUE)
+                              UseVirtualConnections = FALSE)
 
-Proc$read_error()
+#Proc$read_error()
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

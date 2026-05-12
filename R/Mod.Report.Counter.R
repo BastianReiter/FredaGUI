@@ -14,24 +14,11 @@ Mod.Report.Counter.UI <- function(id)
   ns <- NS(id)
 
   div(id = ns("Container"),
-      style = "",
+      style = "padding: 1em;
+               overflow: auto;
+               min-height: 10em;",
 
-      div(style = "display: grid;
-                   grid-template-columns: 1fr 9fr 1fr;",
-
-          div(),
-
-          div(style = "overflow: auto;",
-
-              reactableOutput(outputId = ns("NestedView"))),
-
-              #-----------------------------------------------------------------
-              # div(class = "ui divider", style = "margin: 1.5em 0;"),
-              #-----------------------------------------------------------------
-
-              # uiOutput(outputId = ns("TableView"))),
-
-          div()))
+      reactableOutput(outputId = ns("NestedView")))
 }
 
 
@@ -41,8 +28,7 @@ Mod.Report.Counter.UI <- function(id)
 
 #' @noRd
 #-------------------------------------------------------------------------------
-Mod.Report.Counter.Server <- function(id,
-                                      CurationReport)
+Mod.Report.Counter.Server <- function(id)
 #-------------------------------------------------------------------------------
 {
   moduleServer(id,
@@ -50,9 +36,17 @@ Mod.Report.Counter.Server <- function(id,
                {
                   ns <- session$ns
 
-                  output$NestedView <- renderReactable({  req(session$userData$CurationReport)
+                  WaiterScreen <- CreateWaiterScreen(ID = ns("NestedView"))
 
-                                                          return(CreateTable.Counter.NestedView(CounterData = session$userData$CurationReport()$Counter))
+                  output$NestedView <- renderReactable({  req(session$userData$CurationReport())
+
+                                                          # Assign loading behavior
+                                                          WaiterScreen$show()
+                                                          on.exit(WaiterScreen$hide())
+
+                                                          ReactableTable <- CreateTable.Counter.NestedView(CounterData = session$userData$CurationReport()$Counter)
+
+                                                          return(ReactableTable)
                                                        })
                })
 }

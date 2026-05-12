@@ -16,8 +16,8 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Widget.DataSetCheck <- function(#--- Arguments for app itself ---
                                 RDSCheckData = NULL,
-                                #CDSCheckData = NULL,
-                                #ADSCheckData = NULL,
+                                CDSCheckData = NULL,
+                                ADSCheckData = NULL,
                                 DSConnections = NULL,
                                 #--- Arguments for app wrapper ---
                                 EndProcessWhenClosingApp = TRUE,
@@ -36,8 +36,8 @@ Widget.DataSetCheck <- function(#--- Arguments for app itself ---
               is.flag(RunInViewer))
 
   if (!is.null(RDSCheckData)) assert_that(is.list(RDSCheckData))
-  #if (!is.null(CDSCheckData)) assert_that(is.list(CDSCheckData))
-  #if (!is.null(ADSCheckData)) assert_that(is.list(ADSCheckData))
+  if (!is.null(CDSCheckData)) assert_that(is.list(CDSCheckData))
+  if (!is.null(ADSCheckData)) assert_that(is.list(ADSCheckData))
 
   # Check validity of 'DSConnections' or find them programmatically if none are passed
   DSConnections <- CheckDSConnections(DSConnections)
@@ -72,35 +72,23 @@ Widget.DataSetCheck <- function(#--- Arguments for app itself ---
     {
         Layout <- function(ns)
         {
-            div(h4(class = "ui dividing header",
-                "Data Set Check"),
+            div(style = "display: grid;",
 
-                div(class = "ui accordion",
+                  div(style = "overflow: auto;
+                               width: 100%;",
 
-                    div(class = "active title AccordionHeader",
-                        shiny.semantic::icon(class = "dropdown"),
-                        "Data Set Check"),
-
-                    div(class = "active content",
-
-                        div(style = "height: 30em;
-                                     overflow: auto;
-                                     margin: 0;",
-
-                            Mod.DataSetCheck.UI("RDSCheck")
-
-                            # shiny.semantic::tabset(tabs = list(list(menu = "Raw Data Set (RDS)",
-                            #                                         content = ModDataSetMonitor_UI("RDSMonitor")),
-                            #                                    list(menu = "Curated Data Set (CDS)",
-                            #                                         content = ModDataSetMonitor_UI("CDSMonitor")),
-                            #                                    list(menu = "Augmented Data Set (ADS)",
-                            #                                         content = ModDataSetMonitor_UI("ADSMonitor"))))
-                            ))))
+                      shiny.semantic::tabset(tabs = list(list(menu = "Raw Data Set (RDS)",
+                                                              content = Mod.DataSetCheck.UI(ns("RDSCheck"))),
+                                                         list(menu = "Curated Data Set (CDS)",
+                                                              content = Mod.DataSetCheck.UI(ns("CDSCheck"))),
+                                                         list(menu = "Augmented Data Set (ADS)",
+                                                              content = Mod.DataSetCheck.UI(ns("ADSCheck")))),
+                                             id = ns("Tabset"))))
          }
 
          # Call Widget frame module UI and pass widget-specific UI layout
-         Mod.Widget.UI(id = "ProcessingMonitorWidget",
-                       Title = "CCPhos Processing Monitor",
+         Mod.Widget.UI(id = "Widget.DataSetCheck",
+                       Title = "FREDA Data Set Check",
                        WidgetMainUI = Layout)
     }
 
@@ -112,36 +100,34 @@ Widget.DataSetCheck <- function(#--- Arguments for app itself ---
         # Hide waiter loading screen after initial app load has finished
         waiter::waiter_hide()
 
+        # Initialize global objects
+        session$userData$RDSCheckData <- reactiveVal(NULL)
+        session$userData$CDSCheckData <- reactiveVal(NULL)
+        session$userData$ADSCheckData <- reactiveVal(NULL)
+
+        # output$TestMonitor <- renderText({  req(session$userData$ServerWorkspaceInfo())
+        #                                     paste0(names(session$userData$ServerWorkspaceInfo()), collapse = ", ") })
+
+        # 'Mod.Initialize' assigns content to session$userData objects at app start
+        Mod.Initialize(id = "Initialize",
+                       RDSCheckData = RDSCheckData,
+                       CDSCheckData = CDSCheckData,
+                       ADSCheckData = ADSCheckData)
+
+        #-----------------------------------------------------------------------
+
         # Define widget-specific server logic that is passed to widget frame module
         WidgetServerLogic <- function(session)
                              {
                                 # --- Call modules: Data Set Checks ---
                                 Mod.DataSetCheck.Server(id = "RDSCheck", DataSetCheckData = session$userData$RDSCheckData)
-                                # ModDataSetMonitor_Server(id = "CDSCheck", DataSetCheckData = session$userData$CDSCheckData)
-                                # ModDataSetMonitor_Server(id = "ADSCheck", DataSetCheckData = session$userData$ADSCheckData)
+                                Mod.DataSetCheck.Server(id = "CDSCheck", DataSetCheckData = session$userData$CDSCheckData)
+                                Mod.DataSetCheck.Server(id = "ADSCheck", DataSetCheckData = session$userData$ADSCheckData)
                               }
 
         # Call Widget frame module and pass widget-specific server logic
-        Mod.Widget.Server(id = "ServerExplorerWidget",
-                         WidgetServerLogic)
-
-        #-----------------------------------------------------------------------
-
-        # Initialize global objects
-        session$userData$RDSCheckData <- reactiveVal(NULL)
-        #session$userData$CDSCheckData <- reactiveVal(NULL)
-        #session$userData$ADSCheckData <- reactiveVal(NULL)
-
-        # output$TestMonitor <- renderText({  req(session$userData$ServerWorkspaceInfo())
-        #                                     paste0(names(session$userData$ServerWorkspaceInfo()), collapse = ", ") })
-
-
-        # 'ModInitialize' assigns content to session$userData objects at app start
-        Mod.Initialize(id = "Initialize",
-                       RDSCheckData = RDSCheckData,
-                       #CDSCheckData = CDSCheckData,
-                       #ADSCheckData = ADSCheckData,
-                       )
+        Mod.Widget.Server(id = "Widget.DataSetCheck",
+                          WidgetServerLogic)
 
         # If the option 'EndProcessWhenClosingApp' is TRUE, the following ensures that the background process is automatically ending when the app shuts down
         if (EndProcessWhenClosingApp == TRUE) { session$onSessionEnded(function() { stopApp() }) }

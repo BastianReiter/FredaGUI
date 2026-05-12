@@ -74,19 +74,18 @@ Widget.CurationReport <- function(#--- Arguments for app itself ---
       {
           Layout <- function(ns)
           {
-              # Mod.Report.Counter.UI(ns("Report.Counter"))
+              div(style = "display: grid;",
 
-              div(style = "overflow: auto;
-                           margin: 0;",
+                  div(style = "overflow: auto;
+                               width: 100%;",
 
-
-                  shiny.semantic::tabset(tabs = list(list(menu = "Counter",
-                                                          content = Mod.Report.Counter.UI(ns("Report.Counter"))),
-                                                     list(menu = "Data Harmonization",
-                                                          content = Mod.Report.DataHarmonization.UI(ns("Report.DataHarmonization")))),
-                                                     # list(menu = "Log",
-                                                     #      content = Mod.Report.Log.UI(ns("Report.Log")))),
-                                         id = ns("Tabset")))
+                      shiny.semantic::tabset(tabs = list(list(menu = "Counter",
+                                                              content = Mod.Report.Counter.UI(ns("Report.Counter"))),
+                                                    list(menu = "Data Harmonization",
+                                                         content = Mod.Report.DataHarmonization.UI(ns("Report.DataHarmonization")))),
+                                                    # list(menu = "Log",
+                                                    #      content = Mod.Report.Log.UI(ns("Report.Log")))),
+                                             id = ns("Tabset"))))
           }
 
           # Call Widget frame module UI and pass widget-specific UI layout
