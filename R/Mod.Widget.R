@@ -110,13 +110,11 @@ Mod.Widget.Server <- function(id,
 
                   LoadingOn <- function()
                   {
-                      shinyjs::disable("ProcessingTrigger")
                       WaiterScreen$show()
                   }
 
                   LoadingOff <- function()
                   {
-                      shinyjs::enable("ProcessingTrigger")
                       WaiterScreen$hide()
                   }
 

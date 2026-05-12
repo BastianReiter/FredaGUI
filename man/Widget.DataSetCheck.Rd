@@ -6,6 +6,8 @@
 \usage{
 Widget.DataSetCheck(
   RDSCheckData = NULL,
+  CDSCheckData = NULL,
+  ADSCheckData = NULL,
   DSConnections = NULL,
   EndProcessWhenClosingApp = TRUE,
   RunAutonomously = FALSE,

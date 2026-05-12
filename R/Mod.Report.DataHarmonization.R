@@ -15,7 +15,8 @@ Mod.Report.DataHarmonization.UI <- function(id)
 
   div(style = "display: grid;
                grid-template-columns: 14em auto;
-               grid-gap: 4em;",
+               grid-gap: 4em;
+               padding: 1em;",
 
 
       div(selectInput(inputId = ns("ServerName"),

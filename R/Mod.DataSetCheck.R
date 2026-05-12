@@ -13,8 +13,11 @@ Mod.DataSetCheck.UI <- function(id)
 {
   ns <- NS(id)
 
-  div(id = ns("DataSetCheckContainer"),
-      style = "",
+  #textOutput(outputId = ns("TestMonitor"))
+
+  div(id = ns("Container"),
+      style = "padding: 1em;
+               min-height: 10em;",
 
       uiOutput(outputId = ns("TableStatus")),
 
@@ -51,9 +54,14 @@ Mod.DataSetCheck.Server <- function(id,
                {
                   ns <- session$ns
 
-                  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                  # output$TestMonitor <- renderText({  req(DataSetCheckData)
+                  #
+                  #                                     paste0(names(DataSetCheckData()$TableStatus), collapse = " / ")
+                  #                                 })
+
+                  #-------------------------------------------------------------
                   # Render reactive output: Table status overview
-                  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                  #-------------------------------------------------------------
                   output$TableStatus <- renderUI({  req(DataSetCheckData())
 
                                                     # Modify table data
@@ -76,9 +84,9 @@ Mod.DataSetCheck.Server <- function(id,
                                                 })
 
 
-                  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                  #-------------------------------------------------------------
                   # Render reactive output: Table details
-                  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                  #-------------------------------------------------------------
 
                   # Dynamically create empty UI elements
                   output$TableDetails <- renderUI({   req(DataSetCheckData())
@@ -92,7 +100,7 @@ Mod.DataSetCheck.Server <- function(id,
                                                                       div(class = "ui small grey ribbon label",
                                                                           tablename),
                                                                       div(style = "width: 1000px; overflow: auto;",
-                                                                          uiOutput(outputId = ns(paste0("TableDetails_", tablename))))))
+                                                                          uiOutput(outputId = ns(paste0("TableDetails.", tablename))))))
                                                       })
                                                   })
 
@@ -123,7 +131,7 @@ Mod.DataSetCheck.Server <- function(id,
                               # Note: Using lapply() instead of for-loop and using local() is essential in dynamic assignment of UI output
                               lapply(names(HTMLTables), function(tablename)
                               {
-                                  local({   output[[paste0("TableDetails_", tablename)]] <- renderUI({ HTMLTables[[tablename]] }) })
+                                  local({   output[[paste0("TableDetails.", tablename)]] <- renderUI({ HTMLTables[[tablename]] }) })
                               })
                           })
                })
