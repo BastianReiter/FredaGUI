@@ -4,6 +4,7 @@
 #' Compile table check data from \code{dsFredaClient::ds.CheckTable()} or \code{dsFredaClient::ds.CheckDataSet()} into a table suited for display
 #'
 #' @param CounterData \code{list} - Contains...
+#' @param ShowAllStages \code{logical flag} - Whether to show columns regarding changes in different processing stages
 #'
 #' @return Table object of \code{reactable} class
 #'
@@ -11,7 +12,8 @@
 #'
 #' @author Bastian Reiter
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-CreateTable.Counter <- function(CounterData)
+CreateTable.Counter <- function(CounterData,
+                                ShowAllStages)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {
   # --- For Testing Purposes ---
@@ -51,8 +53,6 @@ CreateTable.Counter <- function(CounterData)
           mutate(SpaceColumn.5 = NA, .after = RecordSubsumption.CountSeedSubjects.Change.Proportion)
   }
 
-
-
   ReportData.DataSetLevel <- CounterData %>%
                                 pluck("DataSetLevel") %>%
                                 PrepareReportData()
@@ -75,7 +75,7 @@ CreateTable.Counter <- function(CounterData)
   ReportData.Details <- CounterData %>%
                             pluck("Details")
 
-
+  #-----------------------------------------------------------------------------
 
   # Define default theme values and enable modification through arguments
   GetTableTheme <- function(Mod.Style = NULL,
@@ -112,6 +112,41 @@ CreateTable.Counter <- function(CounterData)
 
       tags$span(title = Title, shiny::icon(name = IconName, lib = "font-awesome"))
   }
+
+
+  GetDataBarSettings <- function(Level)
+  {
+      BarColor <- dsFredaClient::FredaColors$Green
+      BackgroundColor <- dsFredaClient::FredaColors$MediumGrey
+      if (Level == "TableLevel") { BarColor <- "#67BA67"
+                                   BackgroundColor <- dsFredaClient::FredaColors$LightGrey }
+      if (Level == "SubtableLevel") { BarColor <- "#92CE93"
+                                      BackgroundColor <- dsFredaClient::FredaColors$LightGrey }
+
+      list(min_value = 0,
+           max_value = 1,
+           fill_color = BarColor,
+           background = BackgroundColor,
+           text_color = "white",
+           text_position = "center",
+           text_size = 10,
+           number_fmt = scales::label_percent(suffix = "%"),
+           tooltip = TRUE,
+           box_shadow = TRUE)
+  }
+
+
+  RowStyle.AllServers <- function(index)
+  {
+      if (ReportData.DataSetLevel$Server[index] == "All")
+      {
+          list(fontWeight = "800",
+               borderTop = "2px solid #595959",
+               borderBottom = "2px solid #595959")
+      }
+  }
+
+  #-----------------------------------------------------------------------------
 
 
   ColDef.InitialValues <- function(Title, Category = NA, Level)
@@ -178,39 +213,6 @@ CreateTable.Counter <- function(CounterData)
   }
 
 
-  GetDataBarSettings <- function(Level)
-  {
-      BarColor <- dsFredaClient::FredaColors$Green
-      BackgroundColor <- dsFredaClient::FredaColors$MediumGrey
-      if (Level == "TableLevel") { BarColor <- "#67BA67"
-                                   BackgroundColor <- dsFredaClient::FredaColors$LightGrey }
-      if (Level == "SubtableLevel") { BarColor <- "#92CE93"
-                                      BackgroundColor <- dsFredaClient::FredaColors$LightGrey }
-
-      list(min_value = 0,
-           max_value = 1,
-           fill_color = BarColor,
-           background = BackgroundColor,
-           text_color = "white",
-           text_position = "center",
-           text_size = 10,
-           number_fmt = scales::label_percent(suffix = "%"),
-           tooltip = TRUE,
-           box_shadow = TRUE)
-  }
-
-
-  RowStyle.AllServers <- function(index)
-  {
-      if (ReportData.DataSetLevel$Server[index] == "All")
-      {
-          list(fontWeight = "800",
-               borderTop = "2px solid #595959",
-               borderBottom = "2px solid #595959")
-      }
-  }
-
-
   ColumnGroups <- list(colGroup(name = "Initial Counts",
                                 columns = c("Initial.CountRecords",
                                             "Initial.CountRootSubjects",
@@ -240,40 +242,40 @@ CreateTable.Counter <- function(CounterData)
                                             "Final.CountSeedSubjects.Proportion")))
 
 
-  GetColumnDefinitions <- function(ReportData, Level = "DataSetLevel")
+  GetColumnDefinitions <- function(ReportData, Level = "DataSetLevel", ShowAllStages = TRUE)
   {
       list(Initial.CountRecords = ColDef.InitialValues(Title = "Records", Category = "Records", Level = Level),
            Initial.CountRootSubjects = ColDef.InitialValues(Title = "Diagnoses", Category = "RootSubjects", Level = Level),
            Initial.CountSeedSubjects = ColDef.InitialValues(Title = "Patients", Category = "SeedSubjects", Level = Level),
            SpaceColumn.1 = ColDef.Space(16),
-           PrimaryTableCleaning.CountRecords.Change = ColDef.ChangeValues(Title = "Records", Category = "Records", Level = Level, ReportData = ReportData, DriverColumn = "PrimaryTableCleaning.CountRecords.Change.Proportion"),
+           PrimaryTableCleaning.CountRecords.Change = { if (ShowAllStages == FALSE) colDef(show = FALSE) else ColDef.ChangeValues(Title = "Records", Category = "Records", Level = Level, ReportData = ReportData, DriverColumn = "PrimaryTableCleaning.CountRecords.Change.Proportion") },
            PrimaryTableCleaning.CountRecords.Change.Proportion = colDef(show = FALSE),
-           PrimaryTableCleaning.CountRootSubjects.Change = ColDef.ChangeValues(Title = "Diagnoses", Category = "RootSubjects", Level = Level, ReportData = ReportData, DriverColumn = "PrimaryTableCleaning.CountRootSubjects.Change.Proportion"),
+           PrimaryTableCleaning.CountRootSubjects.Change = { if (ShowAllStages == FALSE) colDef(show = FALSE) else ColDef.ChangeValues(Title = "Diagnoses", Category = "RootSubjects", Level = Level, ReportData = ReportData, DriverColumn = "PrimaryTableCleaning.CountRootSubjects.Change.Proportion") },
            PrimaryTableCleaning.CountRootSubjects.Change.Proportion = colDef(show = FALSE),
-           PrimaryTableCleaning.CountSeedSubjects.Change = ColDef.ChangeValues(Title = "Patients", Category = "SeedSubjects", Level = Level, ReportData = ReportData, DriverColumn = "PrimaryTableCleaning.CountSeedSubjects.Change.Proportion"),
+           PrimaryTableCleaning.CountSeedSubjects.Change = { if (ShowAllStages == FALSE) colDef(show = FALSE) else ColDef.ChangeValues(Title = "Patients", Category = "SeedSubjects", Level = Level, ReportData = ReportData, DriverColumn = "PrimaryTableCleaning.CountSeedSubjects.Change.Proportion") },
            PrimaryTableCleaning.CountSeedSubjects.Change.Proportion = colDef(show = FALSE),
-           SpaceColumn.2 = ColDef.Space(16),
-           TableNormalization.CountRecords.Change = ColDef.ChangeValues(Title = "Records", Category = "Records", Level = Level, ReportData = ReportData, DriverColumn = "TableNormalization.CountRecords.Change.Proportion"),
+           SpaceColumn.2 = { if (ShowAllStages == FALSE) colDef(show = FALSE) else ColDef.Space(16) },
+           TableNormalization.CountRecords.Change = { if (ShowAllStages == FALSE) colDef(show = FALSE) else ColDef.ChangeValues(Title = "Records", Category = "Records", Level = Level, ReportData = ReportData, DriverColumn = "TableNormalization.CountRecords.Change.Proportion") },
            TableNormalization.CountRecords.Change.Proportion = colDef(show = FALSE),
-           TableNormalization.CountRootSubjects.Change = ColDef.ChangeValues(Title = "Diagnoses", Category = "RootSubjects", Level = Level, ReportData = ReportData, DriverColumn = "TableNormalization.CountRootSubjects.Change.Proportion"),
+           TableNormalization.CountRootSubjects.Change = { if (ShowAllStages == FALSE) colDef(show = FALSE) else ColDef.ChangeValues(Title = "Diagnoses", Category = "RootSubjects", Level = Level, ReportData = ReportData, DriverColumn = "TableNormalization.CountRootSubjects.Change.Proportion") },
            TableNormalization.CountRootSubjects.Change.Proportion = colDef(show = FALSE),
-           TableNormalization.CountSeedSubjects.Change = ColDef.ChangeValues(Title = "Patients", Category = "SeedSubjects", Level = Level, ReportData = ReportData, DriverColumn = "TableNormalization.CountSeedSubjects.Change.Proportion"),
+           TableNormalization.CountSeedSubjects.Change = { if (ShowAllStages == FALSE) colDef(show = FALSE) else ColDef.ChangeValues(Title = "Patients", Category = "SeedSubjects", Level = Level, ReportData = ReportData, DriverColumn = "TableNormalization.CountSeedSubjects.Change.Proportion") },
            TableNormalization.CountSeedSubjects.Change.Proportion = colDef(show = FALSE),
-           SpaceColumn.3 = ColDef.Space(16),
-           SecondaryTableCleaning.CountRecords.Change = ColDef.ChangeValues(Title = "Records", Category = "Records", Level = Level, ReportData = ReportData, DriverColumn = "SecondaryTableCleaning.CountRecords.Change.Proportion"),
+           SpaceColumn.3 = { if (ShowAllStages == FALSE) colDef(show = FALSE) else ColDef.Space(16) },
+           SecondaryTableCleaning.CountRecords.Change = { if (ShowAllStages == FALSE) colDef(show = FALSE) else ColDef.ChangeValues(Title = "Records", Category = "Records", Level = Level, ReportData = ReportData, DriverColumn = "SecondaryTableCleaning.CountRecords.Change.Proportion") },
            SecondaryTableCleaning.CountRecords.Change.Proportion = colDef(show = FALSE),
-           SecondaryTableCleaning.CountRootSubjects.Change = ColDef.ChangeValues(Title = "Diagnoses", Category = "RootSubjects", Level = Level, ReportData = ReportData, DriverColumn = "SecondaryTableCleaning.CountRootSubjects.Change.Proportion"),
+           SecondaryTableCleaning.CountRootSubjects.Change = { if (ShowAllStages == FALSE) colDef(show = FALSE) else ColDef.ChangeValues(Title = "Diagnoses", Category = "RootSubjects", Level = Level, ReportData = ReportData, DriverColumn = "SecondaryTableCleaning.CountRootSubjects.Change.Proportion") },
            SecondaryTableCleaning.CountRootSubjects.Change.Proportion = colDef(show = FALSE),
-           SecondaryTableCleaning.CountSeedSubjects.Change = ColDef.ChangeValues(Title = "Patients", Category = "SeedSubjects", Level = Level, ReportData = ReportData, DriverColumn = "SecondaryTableCleaning.CountSeedSubjects.Change.Proportion"),
+           SecondaryTableCleaning.CountSeedSubjects.Change = { if (ShowAllStages == FALSE) colDef(show = FALSE) else ColDef.ChangeValues(Title = "Patients", Category = "SeedSubjects", Level = Level, ReportData = ReportData, DriverColumn = "SecondaryTableCleaning.CountSeedSubjects.Change.Proportion") },
            SecondaryTableCleaning.CountSeedSubjects.Change.Proportion = colDef(show = FALSE),
-           SpaceColumn.4 = ColDef.Space(16),
-           RecordSubsumption.CountRecords.Change = ColDef.ChangeValues(Title = "Records", Category = "Records", Level = Level, ReportData = ReportData, DriverColumn = "RecordSubsumption.CountRecords.Change.Proportion"),
+           SpaceColumn.4 = { if (ShowAllStages == FALSE) colDef(show = FALSE) else ColDef.Space(16) },
+           RecordSubsumption.CountRecords.Change = { if (ShowAllStages == FALSE) colDef(show = FALSE) else ColDef.ChangeValues(Title = "Records", Category = "Records", Level = Level, ReportData = ReportData, DriverColumn = "RecordSubsumption.CountRecords.Change.Proportion") },
            RecordSubsumption.CountRecords.Change.Proportion = colDef(show = FALSE),
-           RecordSubsumption.CountRootSubjects.Change = ColDef.ChangeValues(Title = "Diagnoses", Category = "RootSubjects", Level = Level, ReportData = ReportData, DriverColumn = "RecordSubsumption.CountRootSubjects.Change.Proportion"),
+           RecordSubsumption.CountRootSubjects.Change = { if (ShowAllStages == FALSE) colDef(show = FALSE) else ColDef.ChangeValues(Title = "Diagnoses", Category = "RootSubjects", Level = Level, ReportData = ReportData, DriverColumn = "RecordSubsumption.CountRootSubjects.Change.Proportion") },
            RecordSubsumption.CountRootSubjects.Change.Proportion = colDef(show = FALSE),
-           RecordSubsumption.CountSeedSubjects.Change = ColDef.ChangeValues(Title = "Patients", Category = "SeedSubjects", Level = Level, ReportData = ReportData, DriverColumn = "RecordSubsumption.CountSeedSubjects.Change.Proportion"),
+           RecordSubsumption.CountSeedSubjects.Change = { if (ShowAllStages == FALSE) colDef(show = FALSE) else ColDef.ChangeValues(Title = "Patients", Category = "SeedSubjects", Level = Level, ReportData = ReportData, DriverColumn = "RecordSubsumption.CountSeedSubjects.Change.Proportion") },
            RecordSubsumption.CountSeedSubjects.Change.Proportion = colDef(show = FALSE),
-           SpaceColumn.5 = ColDef.Space(16),
+           SpaceColumn.5 = { if (ShowAllStages == FALSE) colDef(show = FALSE) else ColDef.Space(16) },
            Final.CountRecords = ColDef.FinalValues(Title = "Records", Category = "Records", Level = Level),
            Final.CountRecords.Proportion = colDef(name = "", cell = do.call(reactablefmtr::data_bars, c(list(data = ReportData), GetDataBarSettings(Level = Level)))),
            Final.CountRootSubjects = ColDef.FinalValues(Title = "Diagnoses", Category = "RootSubjects", Level = Level),
@@ -282,6 +284,7 @@ CreateTable.Counter <- function(CounterData)
            Final.CountSeedSubjects.Proportion = colDef(name = "", cell = do.call(reactablefmtr::data_bars, c(list(data = ReportData), GetDataBarSettings(Level = Level)))))
   }
 
+  #-----------------------------------------------------------------------------
 
   # Main table
   Table <- reactable::reactable(data = ReportData.DataSetLevel,
@@ -292,7 +295,7 @@ CreateTable.Counter <- function(CounterData)
                                 rowStyle = RowStyle.AllServers,
                                 theme = GetTableTheme(),
                                 onClick = "expand",
-                                columns = c(GetColumnDefinitions(ReportData = ReportData.DataSetLevel, Level = "DataSetLevel"),
+                                columns = c(GetColumnDefinitions(ReportData = ReportData.DataSetLevel, Level = "DataSetLevel", ShowAllStages = ShowAllStages),
                                             list(Server = colDef(name = "Server",
                                                                  headerStyle = list(background = dsFredaClient::FredaColors$MediumGrey),
                                                                  width = 160,
@@ -312,7 +315,7 @@ CreateTable.Counter <- function(CounterData)
                                                                                                               Mod.HeaderStyle = list(display = "none"),
                                                                                                               Mod.RowStyle = list(height = "30px")),
                                                                                         onClick = "expand",
-                                                                                        columns = c(GetColumnDefinitions(ReportData = ReportData.TableLevel.SelectedServer, Level = "TableLevel"),
+                                                                                        columns = c(GetColumnDefinitions(ReportData = ReportData.TableLevel.SelectedServer, Level = "TableLevel", ShowAllStages = ShowAllStages),
                                                                                                     list(Server = colDef(show = FALSE),
                                                                                                          Table = colDef(width = 160,
                                                                                                                         style = list(background = unname(ColorToRGBCSS(dsFredaClient::FredaColors$MediumGrey, Alpha = 0.7))),
@@ -337,7 +340,7 @@ CreateTable.Counter <- function(CounterData)
                                                                                                                                                          theme = GetTableTheme(Mod.Style = list(fontSize = "12px"),
                                                                                                                                                                                Mod.HeaderStyle = list(display = "none"),
                                                                                                                                                                                Mod.RowStyle = list(height = "30px")),
-                                                                                                                                                         columns = c(GetColumnDefinitions(ReportData = ReportData.TableLevel.SelectedTable, Level = "SubtableLevel"),
+                                                                                                                                                         columns = c(GetColumnDefinitions(ReportData = ReportData.TableLevel.SelectedTable, Level = "SubtableLevel", ShowAllStages = ShowAllStages),
                                                                                                                                                                      list(Server = colDef(width = 160,
                                                                                                                                                                                           style = list(background = unname(ColorToRGBCSS(dsFredaClient::FredaColors$MediumGrey, Alpha = 0.4))))))))
 
