@@ -18,7 +18,13 @@ Mod.Report.Counter.UI <- function(id)
                overflow: auto;
                min-height: 10em;",
 
-      reactableOutput(outputId = ns("NestedView")))
+      shiny.semantic::action_button(ns("ToggleNarrowView"),
+                                    label = "Show all stages"),
+
+      h4(class = "ui dividing header"),
+
+      div(id = ns("CounterTableContainer"),
+          reactableOutput(outputId = ns("CounterTable"))))
 }
 
 
@@ -36,31 +42,70 @@ Mod.Report.Counter.Server <- function(id)
                {
                   ns <- session$ns
 
-                  WaiterScreen <- CreateWaiterScreen(ID = ns("NestedView"))
+                  WaiterScreen <- CreateWaiterScreen(ID = ns("CounterTable"))
 
-                  output$NestedView <- renderReactable({  req(session$userData$CurationReport())
+                  ReactableTable <- reactive({  req(session$userData$CurationReport())
 
-                                                          # Assign loading behavior
-                                                          WaiterScreen$show()
-                                                          on.exit(WaiterScreen$hide())
+                                                # Assign loading behavior
+                                                WaiterScreen$show()
+                                                on.exit(WaiterScreen$hide())
 
-                                                          ReactableTable <- CreateTable.Counter.NestedView(CounterData = session$userData$CurationReport()$Counter)
+                                                CreateTable.Counter(CounterData = session$userData$CurationReport()$Counter)
+                                            })
 
-                                                          return(ReactableTable)
-                                                       })
+                  output$CounterTable <- renderReactable({  req(session$userData$CurationReport())
+                                                            req(ReactableTable())
+
+                                                            return(ReactableTable())
+                                                         })
+
+                  # observe({ shinyjs::toggleClass(id = "Widget.CurationReport-Report.Counter-CounterTableContainer", class = "HideColumns")}) %>%
+                  #     bindEvent(input$ToggleNarrowView)
+
+
+                  ShowStageColumns <- reactiveVal(TRUE)
+
+
+
+                  observe({ ShowStageColumns(!ShowStageColumns())
+
+                            Columns.AlwaysHidden <- c("PrimaryTableCleaning.CountRecords.Change.Proportion",
+                                                      "PrimaryTableCleaning.CountRootSubjects.Change.Proportion",
+                                                      "PrimaryTableCleaning.CountSeedSubjects.Change.Proportion",
+                                                      "TableNormalization.CountRecords.Change.Proportion",
+                                                      "TableNormalization.CountRootSubjects.Change.Proportion",
+                                                      "TableNormalization.CountSeedSubjects.Change.Proportion",
+                                                      "SecondaryTableCleaning.CountRecords.Change.Proportion",
+                                                      "SecondaryTableCleaning.CountRootSubjects.Change.Proportion",
+                                                      "SecondaryTableCleaning.CountSeedSubjects.Change.Proportion",
+                                                      "RecordSubsumption.CountRecords.Change.Proportion",
+                                                      "RecordSubsumption.CountRootSubjects.Change.Proportion",
+                                                      "RecordSubsumption.CountSeedSubjects.Change.Proportion")
+
+                            Columns.ToggleVisibility <- c("PrimaryTableCleaning.CountRecords.Change",
+                                                          "PrimaryTableCleaning.CountRootSubjects.Change",
+                                                          "PrimaryTableCleaning.CountSeedSubjects.Change",
+                                                          "TableNormalization.CountRecords.Change",
+                                                          "TableNormalization.CountRootSubjects.Change",
+                                                          "TableNormalization.CountSeedSubjects.Change",
+                                                          "SecondaryTableCleaning.CountRecords.Change",
+                                                          "SecondaryTableCleaning.CountRootSubjects.Change",
+                                                          "SecondaryTableCleaning.CountSeedSubjects.Change",
+                                                          "RecordSubsumption.CountRecords.Change",
+                                                          "RecordSubsumption.CountRootSubjects.Change",
+                                                          "RecordSubsumption.CountSeedSubjects.Change")
+
+
+                            shinyjs::runjs(sprintf("Reactable.setHiddenColumns('Widget.CurationReport-Report.Counter-CounterTable', %s)",
+                                                   if (ShowStageColumns() == FALSE)
+                                                   {
+                                                      paste0("[", paste0("'", c(Columns.AlwaysHidden, Columns.ToggleVisibility), "'", collapse = ", "), "]")
+                                                   } else {
+                                                      paste0("[", paste0("'", Columns.AlwaysHidden, "'", collapse = ", "), "]")
+                                                   }))
+                          }) %>%
+                      bindEvent(input$ToggleNarrowView)
+
                })
 }
-
-
-# ui <- fluidPage(
-#   titlePanel("Module Template"),
-#   Mod.Report.Counter.UI("my_module")
-# )
-#
-# server <- function(input, output, session) {
-#   # Pass the fixed local object directly — no reactive() wrapper needed
-#   Mod.Report.Counter.Server("my_module", CurationReport = CurationReport)
-# }
-#
-# shinyApp(ui, server)
 

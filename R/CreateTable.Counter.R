@@ -1,5 +1,5 @@
 
-#' CreateTable.Counter.NestedView
+#' CreateTable.Counter
 #'
 #' Compile table check data from \code{dsFredaClient::ds.CheckTable()} or \code{dsFredaClient::ds.CheckDataSet()} into a table suited for display
 #'
@@ -11,7 +11,7 @@
 #'
 #' @author Bastian Reiter
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-CreateTable.Counter.NestedView <- function(CounterData)
+CreateTable.Counter <- function(CounterData)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {
   # --- For Testing Purposes ---

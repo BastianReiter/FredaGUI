@@ -88,7 +88,8 @@ Widget.DataSetCheck(RDSCheckData = RDSTableCheck,
 CurationReport <- ds.GetCurationReport(Module = "CCP")
 
 Widget.CurationReport(Module = "CCP",
-                      CurationReport = CurationReport)
+                      CurationReport = CurationReport,
+                      RunAutonomously = FALSE)
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

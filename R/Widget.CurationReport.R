@@ -81,10 +81,10 @@ Widget.CurationReport <- function(#--- Arguments for app itself ---
 
                       shiny.semantic::tabset(tabs = list(list(menu = "Counter",
                                                               content = Mod.Report.Counter.UI(ns("Report.Counter"))),
-                                                    list(menu = "Data Harmonization",
-                                                         content = Mod.Report.DataHarmonization.UI(ns("Report.DataHarmonization")))),
-                                                    # list(menu = "Log",
-                                                    #      content = Mod.Report.Log.UI(ns("Report.Log")))),
+                                                         list(menu = "Data Harmonization",
+                                                              content = Mod.Report.DataHarmonization.UI(ns("Report.DataHarmonization"))),
+                                                         list(menu = "Log",
+                                                              content = Mod.Report.Log.UI(ns("Report.Log")))),
                                              id = ns("Tabset"))))
           }
 
@@ -102,23 +102,6 @@ Widget.CurationReport <- function(#--- Arguments for app itself ---
           # Hide waiter loading screen after initial app load has finished
           waiter::waiter_hide()
 
-          # Define widget-specific server logic that is passed to widget frame module
-          WidgetServerLogic <- function(session)
-                               {
-                                  # --- Call modules: DataSet Monitors ---
-                                  Mod.Report.Counter.Server(id = "Report.Counter")
-                                  Mod.Report.DataHarmonization.Server(id = "Report.DataHarmonization")
-                                  #Mod.Report.Log.Server(id = "Report.Log")
-
-
-                                }
-
-          # Call Widget frame module and pass widget-specific server logic
-          Mod.Widget.Server(id = "Widget.CurationReport",
-                            WidgetServerLogic)
-
-          #-----------------------------------------------------------------------
-
           # Initialize global objects
           session$userData$CurationReport <- reactiveVal(NULL)
           session$userData$DSConnections <- reactiveVal(NULL)
@@ -132,6 +115,23 @@ Widget.CurationReport <- function(#--- Arguments for app itself ---
                          CurationReport = CurationReport,
                          DSConnections = DSConnections)
 
+          #---------------------------------------------------------------------
+
+          # Define widget-specific server logic that is passed to widget frame module
+          WidgetServerLogic <- function(session)
+                               {
+                                  # --- Call Report modules ---
+                                  Mod.Report.Counter.Server(id = "Report.Counter")
+                                  Mod.Report.DataHarmonization.Server(id = "Report.DataHarmonization")
+                                  Mod.Report.Log.Server(id = "Report.Log")
+                                }
+
+          # Call Widget frame module and pass widget-specific server logic
+          Mod.Widget.Server(id = "Widget.CurationReport",
+                            WidgetServerLogic)
+
+          #---------------------------------------------------------------------
+
           # If the option 'EndProcessWhenClosingApp' is TRUE, the following ensures that the background process is automatically ending when the app shuts down
           if (EndProcessWhenClosingApp == TRUE) { session$onSessionEnded(function() { stopApp() }) }
       }
@@ -143,7 +143,7 @@ Widget.CurationReport <- function(#--- Arguments for app itself ---
 
 #-------------------------------------------------------------------------------
 
-  # Either use CCPhosApp::RunAutonomousApp() to run the app in a separate background process or run it in the hosting session
+  # Either use FredaGUI::RunAutonomousApp() to run the app in a separate background process or run it in the hosting session
   if (RunAutonomously == TRUE)
   {
       RunAutonomousApp(ShinyAppInitFunction = InitFunction,

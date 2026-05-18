@@ -108,12 +108,12 @@ Mod.Report.DataHarmonization.Server <- function(id)
                   observe({ updateSelectInput(session = getDefaultReactiveDomain(),
                                               inputId = "ServerName",
                                               choices = names(session$userData$CurationReport() %>% pluck("DataHarmonization", "Monitors", "TableLevel")),
-                                              selected = names(session$userData$CurationReport()%>% pluck("DataHarmonization", "Monitors", "TableLevel"))[1])
+                                              selected = names(session$userData$CurationReport() %>% pluck("DataHarmonization", "Monitors", "TableLevel"))[1])
 
                             updateSelectInput(session = getDefaultReactiveDomain(),
                                               inputId = "MonitorTableName",
                                               choices = names(session$userData$CurationReport() %>% pluck("DataHarmonization", "Monitors", "FeatureLevel", 1)),
-                                              selected = names(session$userData$CurationReport()%>% pluck("DataHarmonization", "Monitors", "FeatureLevel", 1))[1])
+                                              selected = names(session$userData$CurationReport() %>% pluck("DataHarmonization", "Monitors", "FeatureLevel", 1))[1])
                           }) %>%
                       bindEvent(session$userData$CurationReport())
 

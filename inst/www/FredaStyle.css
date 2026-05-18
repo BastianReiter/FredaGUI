@@ -5,17 +5,17 @@
 /*rgb(5,73,150)*/
 
 
-body { background: linear-gradient(to bottom, #ededed 20%, white 50%, white 60%, #ededed 80%);
-       font-size: 100%; }
+body { background : linear-gradient(to bottom, #ededed 20%, white 50%, white 60%, #ededed 80%);
+       font-size  : 100%; }
 
 
-.item.MainMenuSelected { background-color: rgba(5, 73, 150, 0.5);
-                         box-shadow: inset 0 0 6px 4px white;
-                         color: black; }
+.item.MainMenuSelected { background-color : rgba(5, 73, 150, 0.5);
+                         box-shadow       : inset 0 0 6px 4px white;
+                         color            : black; }
 
 
-.ui.accordion .AccordionHeader { padding: 0.5em 1em !important;
-                                 background: linear-gradient(0deg, rgba(255,255,255,0) 0%, rgba(5,73,150,0.3) 90%, rgba(255,255,255,0) 100%); }
+.ui.accordion .AccordionHeader { padding    : 0.5em 1em !important;
+                                 background : linear-gradient(0deg, rgba(255,255,255,0) 0%, rgba(5,73,150,0.3) 90%, rgba(255,255,255,0) 100%); }
 
 
 /* Hide div element in reactable tables (Column group header bottom horizontal line) */
@@ -24,13 +24,13 @@ body { background: linear-gradient(to bottom, #ededed 20%, white 50%, white 60%,
                      background : transparent; }
 
 
-div.ui.segment.StepInaccessible { background: none;
-                                  color: grey;
-                                  cursor: default; }
+div.ui.segment.StepInaccessible { background  : none;
+                                  color       : grey;
+                                  cursor      : default; }
 
-div.ui.segment.StepAccessible { background-color: white;
-                                color: black;
-                                cursor: pointer; }
+div.ui.segment.StepAccessible { background-color  : white;
+                                color             : black;
+                                cursor            : pointer; }
 
 div.ui.segment.StepHover {  border-color: black;
                             box-shadow: inset 0 0 6px 6px rgba(5, 73, 150, 0.5);

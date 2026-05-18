@@ -99,6 +99,24 @@ Widget.ServerExplorer <- function(#--- Arguments for app itself ---
           # Hide waiter loading screen after initial app load has finished
           waiter::waiter_hide()
 
+          # Initialize global objects
+          session$userData$DSConnections <- reactiveVal(NULL)
+          session$userData$ExplorationData <- NULL
+          session$userData$ServerSpecifications <- reactiveVal(NULL)
+          session$userData$ServerWorkspaceInfo <- reactiveVal(NULL)
+
+          # output$TestMonitor <- renderText({  req(session$userData$ServerWorkspaceInfo())
+          #                                     paste0(names(session$userData$ServerWorkspaceInfo()), collapse = ", ") })
+
+          # 'ModInitialize' assigns content to session$userData objects at app start
+          Mod.Initialize(id = "Initialize",
+                         DSConnections = DSConnections,
+                         ExplorationData = ExplorationData,
+                         ServerSpecifications = ServerSpecifications,
+                         ServerWorkspaceInfo = ServerWorkspaceInfo)
+
+          #---------------------------------------------------------------------
+
           # Define widget-specific server logic that is passed to widget frame module
           WidgetServerLogic <- function(session)
                                {
@@ -115,24 +133,6 @@ Widget.ServerExplorer <- function(#--- Arguments for app itself ---
 
           #---------------------------------------------------------------------
 
-          # Initialize global objects
-          session$userData$DSConnections <- reactiveVal(NULL)
-          session$userData$ExplorationData <- NULL
-          session$userData$ServerSpecifications <- reactiveVal(NULL)
-          session$userData$ServerWorkspaceInfo <- reactiveVal(NULL)
-
-          # output$TestMonitor <- renderText({  req(session$userData$ServerWorkspaceInfo())
-          #                                     paste0(names(session$userData$ServerWorkspaceInfo()), collapse = ", ") })
-
-
-          # 'ModInitialize' assigns content to session$userData objects at app start
-          Mod.Initialize(id = "Initialize",
-                         DSConnections = DSConnections,
-                         ExplorationData = ExplorationData,
-                         ServerSpecifications = ServerSpecifications,
-                         ServerWorkspaceInfo = ServerWorkspaceInfo)
-
-
           # If the option 'EndProcessWhenClosingApp' is TRUE, the following ensures that the background process is automatically ending when the app shuts down
           if (EndProcessWhenClosingApp == TRUE) { session$onSessionEnded(function() { stopApp() }) }
       }
@@ -144,7 +144,7 @@ Widget.ServerExplorer <- function(#--- Arguments for app itself ---
 
 #-------------------------------------------------------------------------------
 
-  # Either use CCPhosApp::RunAutonomousApp() to run the app in a separate background process or run it in the hosting session
+  # Either use FredaGUI::RunAutonomousApp() to run the app in a separate background process or run it in the hosting session
   if (RunAutonomously == TRUE)
   {
       RunAutonomousApp(ShinyAppInitFunction = InitFunction,
