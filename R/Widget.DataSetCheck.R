@@ -28,7 +28,7 @@ Widget.DataSetCheck <- function(#--- Arguments for app itself ---
 {
   # --- For Testing Purposes ---
   # DSConnections <- CCPConnections
-  # ServerWorkspaceInfo <- dsCCPhosClient::GetServerWorkspaceInfo(DSConnections = DSConnections)
+  # ServerWorkspaceInfo <- dsFredaClient::GetServerWorkspaceInfo(DSConnections = DSConnections)
 
   # --- Argument Validation ---
   assert_that(is.flag(EndProcessWhenClosingApp),
@@ -129,6 +129,8 @@ Widget.DataSetCheck <- function(#--- Arguments for app itself ---
         Mod.Widget.Server(id = "Widget.DataSetCheck",
                           WidgetServerLogic)
 
+        #-----------------------------------------------------------------------
+
         # If the option 'EndProcessWhenClosingApp' is TRUE, the following ensures that the background process is automatically ending when the app shuts down
         if (EndProcessWhenClosingApp == TRUE) { session$onSessionEnded(function() { stopApp() }) }
     }
@@ -140,7 +142,7 @@ Widget.DataSetCheck <- function(#--- Arguments for app itself ---
 
 #-------------------------------------------------------------------------------
 
-  # Either use CCPhosApp::RunAutonomousApp() to run the app in a separate background process or run it in the hosting session
+  # Either use FredaGUI::RunAutonomousApp() to run the app in a separate background process or run it in the hosting session
   if (RunAutonomously == TRUE)
   {
       RunAutonomousApp(ShinyAppInitFunction = InitFunction,

@@ -108,6 +108,68 @@ DecimalToColor <- function(Decimal,
 
 
 #===============================================================================
+#' MessageToHtml
+#'
+#' Turn message into HTML
+#'
+#' @param message \code{character vector} of length 1 with optional name
+#' @export
+#-------------------------------------------------------------------------------
+MessageToHtml <- function(message)
+#-------------------------------------------------------------------------------
+{
+  assert_that(is.vector(message))
+
+  MessageClass <- names(message)
+  if (is.null(MessageClass)) { MessageClass <- "Info" }
+  MessageClassTypeDetails <- FALSE
+
+  MessageIndent <- ""
+  MessageStyle <- c("font-size: 0.8em")
+
+  HtmlMessage <- shiny::br(shiny::span(""))
+
+  if (MessageClass == "Topic")
+  {
+      HtmlMessage <- div(class = "ui horizontal divider", as.character(message))
+  }
+  else
+  {
+      if (MessageClass == "Subtopic")
+      {
+          MessageStyle <- c(MessageStyle, "font-weight: bold", "text-decoration-line: underline")
+      }
+
+      if (str_starts(MessageClass, "Details."))
+      {
+          MessageIndent <- "   - "
+          MessageStyle <- c(MessageStyle, "color: #595959")
+          MessageClass <- str_remove(MessageClass, "Details.")
+      }
+
+      if (MessageClass == "Special")
+      {
+          MessageStyle <- c(MessageStyle, "font-weight: bold")
+      }
+
+      IconClass <- case_when(MessageClass == "Info" ~ "blue info circle",
+                             MessageClass == "Success" ~ "green check circle",
+                             MessageClass == "Warning" ~ "orange exclamation triangle",
+                             MessageClass == "Failure" ~ "red times circle",
+                             MessageClass == "Special" ~ "star",
+                             .default = "none")
+
+      HtmlMessage <- shiny::br(shiny::span(style = paste0(MessageStyle, collapse = "; "),
+                                           shiny.semantic::icon(class = IconClass),
+                                           paste0(MessageIndent, as.character(message))))
+  }
+
+  return(HtmlMessage)
+}
+#===============================================================================
+
+
+#===============================================================================
 #' Reactable.ConditionalCellStyle
 #' @param Value The cell value
 #' @param Type One of 'Change' / 'Completeness'

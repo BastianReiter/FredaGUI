@@ -22,7 +22,8 @@ Mod.MessageMonitor.UI <- function(id)
       div(class = "ui top attached label",
           "Messages"),
 
-      uiOutput(ns("Messages"), style = "line-height: 0.6;"))
+      uiOutput(outputId = ns("Messages"),
+               style = "line-height: 0.6;"))
 }
 
 
@@ -34,7 +35,7 @@ Mod.MessageMonitor.UI <- function(id)
 #' @noRd
 #-------------------------------------------------------------------------------
 Mod.MessageMonitor.Server <- function(id,
-                                     MessagesList)
+                                      MessagesList)
 #-------------------------------------------------------------------------------
 {
   # Formal check if argument is reactive (relevant only during development)

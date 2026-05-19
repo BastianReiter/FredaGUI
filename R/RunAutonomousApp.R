@@ -23,7 +23,7 @@ RunAutonomousApp <- function(ShinyAppInitFunction,
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {
   # --- For Testing Purposes ---
-  # ShinyAppInitFunction <- CCPhosApp::StartCCPhosApp
+  # ShinyAppInitFunction <- FredaGUI::StartFredaApp
   # AppArguments <- list(CCPTestData = TestData)
   # Host <- "127.0.0.1"
   # Port <- NULL
@@ -43,11 +43,11 @@ RunAutonomousApp <- function(ShinyAppInitFunction,
                           #TestData <- readRDS("../dsCCPhos/Development/Data/TestData/CCPTestData.rds")
 
                           # Load namespaces for new background R session
-                          library(CCPhosApp)
+                          library(FredaGUI)
                           library(DSI)
                           library(shiny)
 
-                          # Start CCPhos app
+                          # Start FredaGUI app
                           shiny::runApp(do.call(ShinyAppInitFunction.Bg, AppArguments.Bg),
                                         port = Port.Bg,
                                         host = Host.Bg,

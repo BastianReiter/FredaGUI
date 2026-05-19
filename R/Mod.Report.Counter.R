@@ -18,7 +18,15 @@ Mod.Report.Counter.UI <- function(id)
                overflow: auto;
                min-height: 10em;",
 
-      reactableOutput(outputId = ns("NestedView")))
+      shiny.semantic::toggle(ns("Tgl.ShowAllStages"),
+                             label = "Show detailed stages",
+                             is_marked = FALSE),
+
+      h4(class = "ui dividing header"),
+
+      div(id = ns("CounterTableContainer"),
+          reactableOutput(outputId = ns("CounterTable")),
+          reactableOutput(outputId = ns("CounterTable.WithAllStages"))))
 }
 
 
@@ -36,31 +44,25 @@ Mod.Report.Counter.Server <- function(id)
                {
                   ns <- session$ns
 
-                  WaiterScreen <- CreateWaiterScreen(ID = ns("NestedView"))
+                  WaiterScreen <- CreateWaiterScreen(ID = ns("CounterTable"))
 
-                  output$NestedView <- renderReactable({  req(session$userData$CurationReport())
+                  CounterData <- isolate(session$userData$CurationReport()$Counter)
 
-                                                          # Assign loading behavior
-                                                          WaiterScreen$show()
-                                                          on.exit(WaiterScreen$hide())
+                  # Toggle button functionality
+                  observe({ if (input$Tgl.ShowAllStages == FALSE)
+                            {
+                                shinyjs::hide(id = "CounterTable.WithAllStages")
+                                shinyjs::show(id = "CounterTable")
+                            } else {
+                                shinyjs::hide(id = "CounterTable")
+                                shinyjs::show(id = "CounterTable.WithAllStages")
+                            }
+                          }) %>%
+                      bindEvent(input$Tgl.ShowAllStages)
 
-                                                          ReactableTable <- CreateTable.Counter.NestedView(CounterData = session$userData$CurationReport()$Counter)
-
-                                                          return(ReactableTable)
-                                                       })
+                  # Main table output
+                  output$CounterTable <- renderReactable({ return(CreateTable.Counter(CounterData = CounterData, ShowAllStages = FALSE)) })
+                  output$CounterTable.WithAllStages <- renderReactable({ return(CreateTable.Counter(CounterData = CounterData, ShowAllStages = TRUE)) })
                })
 }
-
-
-# ui <- fluidPage(
-#   titlePanel("Module Template"),
-#   Mod.Report.Counter.UI("my_module")
-# )
-#
-# server <- function(input, output, session) {
-#   # Pass the fixed local object directly — no reactive() wrapper needed
-#   Mod.Report.Counter.Server("my_module", CurationReport = CurationReport)
-# }
-#
-# shinyApp(ui, server)
 
