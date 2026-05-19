@@ -78,7 +78,9 @@ CreateTable.Counter <- function(CounterData,
   #-----------------------------------------------------------------------------
 
   # Define default theme values and enable modification through arguments
-  GetTableTheme <- function(Mod.Style = NULL,
+  GetTableTheme <- function(Mod.Border.Color = NULL,
+                            Mod.Border.Width = NULL,
+                            Mod.Style = NULL,
                             Mod.HeaderStyle = NULL,
                             Mod.RowStyle = NULL)
   {
@@ -94,7 +96,9 @@ CreateTable.Counter <- function(CounterData,
       if (!is.null(Mod.HeaderStyle)) HeaderStyle <- HeaderStyle %>% modifyList(Mod.HeaderStyle)
       if (!is.null(Mod.RowStyle)) RowStyle <- RowStyle %>% modifyList(Mod.RowStyle)
 
-      reactableTheme(headerStyle = HeaderStyle,
+      reactableTheme(borderColor = Mod.Border.Color,
+                     borderWidth = Mod.Border.Width,
+                     headerStyle = HeaderStyle,
                      style = Style,
                      rowStyle = RowStyle,
                      groupHeaderStyle = list(background = dsFredaClient::FredaColors$DarkGrey,
@@ -286,6 +290,42 @@ CreateTable.Counter <- function(CounterData,
 
   #-----------------------------------------------------------------------------
 
+  # Function to create details table
+  GetDetailsTable <- function(DetailsData)
+  {
+      reactable::reactable(data = DetailsData,
+                           pagination = FALSE,
+                           defaultColDef = colDef(align = "center", vAlign = "center"),
+                           borderless = TRUE,
+                           fullWidth = TRUE,
+                           theme = GetTableTheme(Mod.Style = list(marginLeft = 200,
+                                                                  fontSize = "11px",
+                                                                  border = "2px solid grey",
+                                                                  borderRadius = "2px"),
+                                                 Mod.HeaderStyle = list(background = dsFredaClient::FredaColors$PrimaryLight,
+                                                                        color = "#FFFFFF"),
+                                                 Mod.RowStyle = list(height = "auto",
+                                                                     borderBottom = "1px solid #D0D0D0")),
+                           columns = list(Timestamp = colDef(show = FALSE),
+                                          ProcessingStage = colDef(name = "Processing Stage",
+                                                                   width = 150),
+                                          ProcessTopic = colDef(name = "Topic",
+                                                                width = 150),
+                                          ProcessTopic.Subgroup = colDef(name = "Subtopic",
+                                                                         width = 200),
+                                          MessageClass = colDef(show = FALSE),
+                                          Message = colDef(show = FALSE),
+                                          CountRecords.Removed = colDef(name = "Removed Records",
+                                                                        width = 150),
+                                          CountRecords.Added = colDef(name = "Added Records",
+                                                                      width = 150),
+                                          CountRootSubjects.Affected = colDef(name = "Affected Diagnoses",
+                                                                              width = 150),
+                                          CountSeedSubjects.Affected = colDef(name = "Affected Patients",
+                                                                              width = 150),
+                                          SpaceColumn.End = colDef(name = "")))
+  }
+
   # Main table
   Table <- reactable::reactable(data = ReportData.DataSetLevel,
                                 pagination = FALSE,
@@ -298,8 +338,9 @@ CreateTable.Counter <- function(CounterData,
                                 columns = c(GetColumnDefinitions(ReportData = ReportData.DataSetLevel, Level = "DataSetLevel", ShowAllStages = ShowAllStages),
                                             list(Server = colDef(name = "Server",
                                                                  headerStyle = list(background = dsFredaClient::FredaColors$MediumGrey),
-                                                                 width = 160,
+                                                                 width = 200,
                                                                  style = list(background = dsFredaClient::FredaColors$MediumGrey),
+                                                                 align = "left",
                                                                  details = function(index.DataSetLevel)
                                                                            {
                                                                               SelectedServer <- ReportData.DataSetLevel$Server[index.DataSetLevel]
@@ -317,8 +358,8 @@ CreateTable.Counter <- function(CounterData,
                                                                                         onClick = "expand",
                                                                                         columns = c(GetColumnDefinitions(ReportData = ReportData.TableLevel.SelectedServer, Level = "TableLevel", ShowAllStages = ShowAllStages),
                                                                                                     list(Server = colDef(show = FALSE),
-                                                                                                         Table = colDef(width = 160,
-                                                                                                                        style = list(background = unname(ColorToRGBCSS(dsFredaClient::FredaColors$MediumGrey, Alpha = 0.7))),
+                                                                                                         Table = colDef(width = 190,
+                                                                                                                        style = list(marginLeft = 10, background = unname(ColorToRGBCSS(dsFredaClient::FredaColors$MediumGrey, Alpha = 0.7))),
                                                                                                                         align = "left",
                                                                                                                         details = function(index.TableLevel)
                                                                                                                                   {
@@ -327,8 +368,7 @@ CreateTable.Counter <- function(CounterData,
                                                                                                                                     # --- For cumulated table-level summaries: On expand show table-specific summaries of different servers ---
                                                                                                                                     if (SelectedServer == "All")
                                                                                                                                     {
-                                                                                                                                        ReportData.TableLevel.SelectedTable <- ReportData.TableLevel.ByTable %>%
-                                                                                                                                                                                    pluck(SelectedTable)
+                                                                                                                                        ReportData.TableLevel.SelectedTable <- ReportData.TableLevel.ByTable %>% pluck(SelectedTable)
 
                                                                                                                                         if (is.null(ReportData.TableLevel.SelectedTable))
                                                                                                                                         { return(NULL) } else { ReportData.TableLevel.SelectedTable <- ReportData.TableLevel.SelectedTable %>% filter(Server != "All") }
@@ -341,46 +381,30 @@ CreateTable.Counter <- function(CounterData,
                                                                                                                                                                                Mod.HeaderStyle = list(display = "none"),
                                                                                                                                                                                Mod.RowStyle = list(height = "30px")),
                                                                                                                                                          columns = c(GetColumnDefinitions(ReportData = ReportData.TableLevel.SelectedTable, Level = "SubtableLevel", ShowAllStages = ShowAllStages),
-                                                                                                                                                                     list(Server = colDef(width = 160,
-                                                                                                                                                                                          style = list(background = unname(ColorToRGBCSS(dsFredaClient::FredaColors$MediumGrey, Alpha = 0.4))))))))
+                                                                                                                                                                     list(Server = colDef(width = 180,
+                                                                                                                                                                                          style = list(marginLeft = 20, background = unname(ColorToRGBCSS(dsFredaClient::FredaColors$MediumGrey, Alpha = 0.4))),
+                                                                                                                                                                                          align = "left",
+                                                                                                                                                                                          details = function(index.TableLevel.Server)
+                                                                                                                                                                                                    {
+                                                                                                                                                                                                        SelectedServerInAll <- ReportData.TableLevel.SelectedTable$Server[index.TableLevel.Server]
+
+                                                                                                                                                                                                        ReportData.Details.SelectedTable.SelectedServer <- ReportData.Details %>% pluck(SelectedServerInAll, SelectedTable)
+
+                                                                                                                                                                                                        if (is.null(ReportData.Details.SelectedTable.SelectedServer))
+                                                                                                                                                                                                        { return(NULL) } else { ReportData.Details.SelectedTable.SelectedServer <- ReportData.Details.SelectedTable.SelectedServer %>% mutate(SpaceColumn.End = NA) }
+
+                                                                                                                                                                                                        return(GetDetailsTable(DetailsData = ReportData.Details.SelectedTable.SelectedServer))
+                                                                                                                                                                                                    })))))
 
                                                                                                                                     # --- For server-specific table-level summaries: On expand show Counter details for selected Server and selected Table ---
                                                                                                                                     } else {
 
-                                                                                                                                        ReportData.Details.SelectedServer.SelectedTable <- ReportData.Details %>%
-                                                                                                                                                                                                pluck(SelectedServer, SelectedTable)
+                                                                                                                                        ReportData.Details.SelectedServer.SelectedTable <- ReportData.Details %>% pluck(SelectedServer, SelectedTable)
 
                                                                                                                                         if (is.null(ReportData.Details.SelectedServer.SelectedTable))
                                                                                                                                         { return(NULL) } else { ReportData.Details.SelectedServer.SelectedTable <- ReportData.Details.SelectedServer.SelectedTable %>% mutate(SpaceColumn.End = NA) }
 
-                                                                                                                                        return(reactable(data = ReportData.Details.SelectedServer.SelectedTable,
-                                                                                                                                                         pagination = FALSE,
-                                                                                                                                                         defaultColDef = colDef(align = "center", vAlign = "center"),
-                                                                                                                                                         borderless = TRUE,
-                                                                                                                                                         fullWidth = TRUE,
-                                                                                                                                                         theme = GetTableTheme(Mod.Style = list(fontSize = "11px"),
-                                                                                                                                                                               Mod.HeaderStyle = list(background = dsFredaClient::FredaColors$PrimaryLight,
-                                                                                                                                                                                                      color = "#FFFFFF"),
-                                                                                                                                                                               Mod.RowStyle = list(height = "auto",
-                                                                                                                                                                                                   borderBottom = "1px solid #D0D0D0")),
-                                                                                                                                                         columns = list(Timestamp = colDef(show = FALSE),
-                                                                                                                                                                        ProcessingStage = colDef(name = "Processing Stage",
-                                                                                                                                                                                                 width = 150),
-                                                                                                                                                                        ProcessTopic = colDef(name = "Topic",
-                                                                                                                                                                                              width = 150),
-                                                                                                                                                                        ProcessTopic.Subgroup = colDef(name = "Subtopic",
-                                                                                                                                                                                                       width = 200),
-                                                                                                                                                                        MessageClass = colDef(show = FALSE),
-                                                                                                                                                                        Message = colDef(show = FALSE),
-                                                                                                                                                                        CountRecords.Removed = colDef(name = "Removed Records",
-                                                                                                                                                                                                      width = 150),
-                                                                                                                                                                        CountRecords.Added = colDef(name = "Added Records",
-                                                                                                                                                                                                    width = 150),
-                                                                                                                                                                        CountRootSubjects.Affected = colDef(name = "Affected Diagnoses",
-                                                                                                                                                                                                            width = 150),
-                                                                                                                                                                        CountSeedSubjects.Affected = colDef(name = "Affected Patients",
-                                                                                                                                                                                                            width = 150),
-                                                                                                                                                                        SpaceColumn.End = colDef(name = ""))))
+                                                                                                                                        return(GetDetailsTable(DetailsData = ReportData.Details.SelectedServer.SelectedTable))
                                                                                                                                     }
 
                                                                                                                                   }))))
