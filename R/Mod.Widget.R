@@ -47,15 +47,15 @@ Mod.Widget.UI <- function(id,
                                 default = list(areas = rbind("header",
                                                              "main"),
 
-                                               rows_height = c("minmax(40px, 6vh)", "90vh")),
+                                               rows_height = c("40px", "auto")),
 
                                 # --- Main grid layout for mobile devices ---
                                 mobile = list(areas = rbind("header",
                                                             "main"),
 
-                                              rows_height = c("100px", "auto"))),
+                                              rows_height = c("40px", "auto"))),
 
-          area_styles = list(header = "padding: 10px 1em;
+          area_styles = list(header = "align-content: center;
                                        background: rgb(5,73,150);
                                        background: linear-gradient(90deg, rgba(5,73,150,1) 8%, rgba(255,255,255,1) 100%);
                                        color: #595959;",
@@ -63,13 +63,20 @@ Mod.Widget.UI <- function(id,
 
           #--- HEADER --------------------------------------------------------
 
-          header = shiny.semantic::split_layout(style = "display: flex;      /* Set up flexbox to use 'justify-content: space-between' to enable free space between columns without specifying column width */
-                                                         justify-content: space-between;
-                                                         align-items: center;",
+          header = div(style = "display: grid;
+                                grid-template-columns: 50px auto;
+                                align-items: center;
+                                align-content: center;
+                                margin-left: 1em;",
 
-                                                img(src = "www/FredaLogo.png",
-                                                    alt = "FREDA Logo",
-                                                    height = "30px")),
+                       img(src = "www/FredaLogo.png",
+                               alt = "FREDA Logo",
+                               height = "30px"),
+
+                       div(style = "color: white;
+                                    font-size: large;
+                                    font-weight: bold;",
+                           Title)),
 
           #--- MAIN PANEL ----------------------------------------------------
           main = shiny.semantic::segment(class = "ui raised scrolling segment",

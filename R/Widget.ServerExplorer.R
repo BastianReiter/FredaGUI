@@ -4,7 +4,7 @@
 #' Launch Module \code{ModServerExplorer} as a Shiny app in a background process so it runs independently from hosting R session.
 #'
 #' @param ServerSpecifications \code{data.frame} containing credentials for login
-#' @param ServerWorkspaceInfo \code{list} containing the previously obtained results of \code{dsCCPhosClient::GetServerWorkspaceInfo()}. Default is \code{NULL}, which means these info data are obtained by the app itself.
+#' @param ServerWorkspaceInfo \code{list} containing the previously obtained results of \code{dsFredaClient::GetServerWorkspaceInfo()}. Default is \code{NULL}, which means these info data are obtained by the app itself.
 #' @param DSConnections \code{list} of \code{DSConnection} objects
 #' @param RunAutonomously \code{logical} indicating whether the Shiny app is hosted by a background process (default) available as a URL via web browsers or - if set to \code{FALSE} - is hosted by the current running R session.
 #' @param RunInViewer \code{logical} indicating whether the Shiny app should be run in the RStudio Viewer pane (Default: \code{FALSE})
@@ -32,7 +32,7 @@ Widget.ServerExplorer <- function(#--- Arguments for app itself ---
 {
   # --- For Testing Purposes ---
   # DSConnections <- CCPConnections
-  # ServerWorkspaceInfo <- dsCCPhosClient::GetServerWorkspaceInfo(DSConnections = DSConnections)
+  # ServerWorkspaceInfo <- dsFredaClient::GetServerWorkspaceInfo(DSConnections = DSConnections)
 
   # --- Argument Validation ---
   assert_that(is.logical(EndProcessWhenClosingApp),
@@ -84,7 +84,7 @@ Widget.ServerExplorer <- function(#--- Arguments for app itself ---
 
            # Call Widget frame module UI and pass widget-specific UI layout
            Mod.Widget.UI(id = "ServerExplorerWidget",
-                         Title = "CCPhos Server Explorer",
+                         Title = "FREDA Server Explorer",
                          WidgetMainUI = Layout)
       }
 

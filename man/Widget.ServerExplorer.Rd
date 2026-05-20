@@ -20,7 +20,7 @@ Widget.ServerExplorer(
 \arguments{
 \item{ServerSpecifications}{\code{data.frame} containing credentials for login}
 
-\item{ServerWorkspaceInfo}{\code{list} containing the previously obtained results of \code{dsCCPhosClient::GetServerWorkspaceInfo()}. Default is \code{NULL}, which means these info data are obtained by the app itself.}
+\item{ServerWorkspaceInfo}{\code{list} containing the previously obtained results of \code{dsFredaClient::GetServerWorkspaceInfo()}. Default is \code{NULL}, which means these info data are obtained by the app itself.}
 
 \item{DSConnections}{\code{list} of \code{DSConnection} objects}
 
