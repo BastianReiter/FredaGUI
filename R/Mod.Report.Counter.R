@@ -24,9 +24,8 @@ Mod.Report.Counter.UI <- function(id)
 
       h4(class = "ui dividing header"),
 
-      div(id = ns("CounterTableContainer"),
-          reactableOutput(outputId = ns("CounterTable")),
-          reactableOutput(outputId = ns("CounterTable.WithAllStages"))))
+      reactableOutput(outputId = ns("CounterTable")),
+      reactableOutput(outputId = ns("CounterTable.WithAllStages")))
 }
 
 

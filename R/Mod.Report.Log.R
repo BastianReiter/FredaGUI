@@ -24,8 +24,7 @@ Mod.Report.Log.UI <- function(id)
 
       h4(class = "ui dividing header"),
 
-      div(style = "padding: 1em;",
-          reactableOutput(outputId = ns("LogTable"))))
+      reactableOutput(outputId = ns("LogTable")))
 }
 
 
@@ -73,7 +72,14 @@ Mod.Report.Log.Server <- function(id)
 
                                                         reactable::reactable(data = LogData(),
                                                                              pagination = FALSE,
-                                                                             defaultColDef = colDef(align = "center", vAlign = "center"))
+                                                                             defaultColDef = colDef(align = "center", vAlign = "center"),
+                                                                             borderless = TRUE,
+                                                                             theme = reactableTheme(style = list(fontFamily = "Inter, sans-serif",
+                                                                                                                 fontSize = "12px"),
+                                                                                                    rowStyle = list(height = "30px")),
+                                                                             columns = list(Timestamp = colDef(style = list(color = dsFredaClient::FredaColors$MediumGrey,
+                                                                                                                            fontFamily = "Lucida Console"))
+                                                                                            ))
 
                                                     })
 

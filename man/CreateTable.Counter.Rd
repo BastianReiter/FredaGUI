@@ -4,10 +4,12 @@
 \alias{CreateTable.Counter}
 \title{CreateTable.Counter}
 \usage{
-CreateTable.Counter(CounterData)
+CreateTable.Counter(CounterData, ShowAllStages)
 }
 \arguments{
 \item{CounterData}{\code{list} - Contains...}
+
+\item{ShowAllStages}{\code{logical flag} - Whether to show columns regarding changes in different processing stages}
 }
 \value{
 Table object of \code{reactable} class
