@@ -39,24 +39,30 @@ Widget.DataSetCheck <- function(#--- Arguments for app itself ---
   if (!is.null(CDSCheckData)) assert_that(is.list(CDSCheckData))
   if (!is.null(ADSCheckData)) assert_that(is.list(ADSCheckData))
 
-  # Check validity of 'DSConnections' or find them programmatically if none are passed
-  DSConnections <- CheckDSConnections(DSConnections)
-
 #-------------------------------------------------------------------------------
 
-  # If no monitor data is passed, get it programmatically
-  # if (is.null(RDSCheckData) && EnableLiveConnection == FALSE) { RDSCheckData <- dsFredaClient::ds.GetDataSetCheck(DataSetName = "CCP.RawDataSet",
-  #                                                                                                                 Module = "CCP",
-  #                                                                                                                 Stage = "Raw",
-  #                                                                                                                 DSConnections = DSConnections) }
-  # if (is.null(CDSCheckData) && EnableLiveConnection == FALSE) { CDSCheckData <- dsFredaClient::ds.GetDataSetCheck(DataSetName = "CCP.CuratedDataSet",
-  #                                                                                                                 Module = "CCP",
-  #                                                                                                                 Stage = "Curated",
-  #                                                                                                                 DSConnections = DSConnections) }
-  # if (is.null(ADSCheckData) && EnableLiveConnection == FALSE) { ADSCheckData <- dsFredaClient::ds.GetDataSetCheck(DataSetName = "CCP.AugmentedDataSet",
-  #                                                                                                                 Module = "CCP",
-  #                                                                                                                 Stage = "Augmented",
-  #                                                                                                                 DSConnections = DSConnections) }
+  # If no report data is passed, get it programmatically
+  if (is.null(RDSCheckData) & is.null(CDSCheckData) & is.null(ADSCheckData))
+  {
+      # Check validity of 'DSConnections' or find them programmatically if none are passed
+      DSConnections <- CheckDSConnections(DSConnections)
+
+      RDSCheckData <- dsFredaClient::ds.GetDataSetCheck(DataSetName = "CCP.RawDataSet",
+                                                        Module = "CCP",
+                                                        Stage = "Raw",
+                                                        DSConnections = DSConnections)
+
+      CDSCheckData <- dsFredaClient::ds.GetDataSetCheck(DataSetName = "CCP.CuratedDataSet",
+                                                        Module = "CCP",
+                                                        Stage = "Curated",
+                                                        DSConnections = DSConnections)
+
+      ADSCheckData <- dsFredaClient::ds.GetDataSetCheck(DataSetName = "CCP.AugmentedDataSet",
+                                                        Module = "CCP",
+                                                        Stage = "Augmented",
+                                                        DSConnections = DSConnections)
+  }
+
 #-------------------------------------------------------------------------------
 
   # Create the app initiating function (UI and server component resulting in a ShinyApp object)

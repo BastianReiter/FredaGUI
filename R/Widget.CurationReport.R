@@ -46,14 +46,14 @@ Widget.CurationReport <- function(#--- Arguments for app itself ---
 
   if (!is.null(CurationReport)) assert_that(is.list(CurationReport))
 
-  # Check validity of 'DSConnections' or find them programmatically if none are passed
-  DSConnections <- CheckDSConnections(DSConnections)
-
 #-------------------------------------------------------------------------------
 
   # If no CurationReport data is passed, get it programmatically
   if (is.null(CurationReport))
   {
+      # Check validity of 'DSConnections' or find them programmatically if none are passed
+      DSConnections <- CheckDSConnections(DSConnections)
+
       CurationReport <- dsFredaClient::ds.GetCurationReport(Module = Module,
                                                             DSConnections = DSConnections,
                                                             DS.async = DS.async)
@@ -67,9 +67,9 @@ Widget.CurationReport <- function(#--- Arguments for app itself ---
       # Since the app is deployed as a package, the folder for external resources (e.g. CSS files, static images) needs to be added manually
       shiny::addResourcePath('www', system.file("www", package = "FredaGUI"))
 
-      #---------------------------------------------------------------------------
+      #-------------------------------------------------------------------------
       # Widget UI component
-      #---------------------------------------------------------------------------
+      #-------------------------------------------------------------------------
       UI <- function()
       {
           Layout <- function(ns)
@@ -94,9 +94,9 @@ Widget.CurationReport <- function(#--- Arguments for app itself ---
                         WidgetMainUI = Layout)
       }
 
-      #---------------------------------------------------------------------------
+      #-------------------------------------------------------------------------
       # Widget Server Logic
-      #---------------------------------------------------------------------------
+      #-------------------------------------------------------------------------
       Server <- function(input, output, session)
       {
           # Hide waiter loading screen after initial app load has finished
