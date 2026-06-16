@@ -51,17 +51,21 @@ DataFrameToHtmlTable <- function(DataFrame,
   # --- For Testing Purposes ---
   # DataFrame <- readRDS("TestTable.rds")
   # TableID <- NULL
-  # CategoryColumn <- NULL
-  # ColContentHorizontalAlign <- "left"
+  # CategoryColumn <- "Feature"
+  # ColContentHorizontalAlign <- "center"
   # ColumnCSSClass <- NULL
   # ColumnIcons <- NULL
-  # ColumnLabels <- NULL
+  # ColumnLabels <- c(Value.Raw = "Raw",
+  #                   Value.Remediated = "Remediated",
+  #                   Value.Recoded = "Recoded",
+  #                   Value.Final = "Final",
+  #                   Count.Raw = "Count")
   # ColumnLabelsLineBreak <- FALSE
   # ColumnMaxWidth <- 1000
   # HeaderColspans <- NULL
   # RotatedHeaderNames <- character()
   # RowColorColumn <- NULL
-  # SemanticTableCSSClass <- "ui celled table"
+  # SemanticTableCSSClass <- "ui small compact celled structured table"
   # TableStyle <- ""
   # TurnColorValuesIntoDots <- TRUE
   # TurnLogicalsIntoIcons <- FALSE
@@ -74,6 +78,11 @@ DataFrameToHtmlTable <- function(DataFrame,
   {
       return("")
   }
+
+  # Replace quote marks with '&quot' to avoid html syntax errors
+  DataFrame <- DataFrame %>%
+                    mutate(across(where(is.character),
+                                  ~ str_replace_all(.x, "'", "&quot;")))
 
   # Convert object passed to 'DataFrame' argument (e.g. tibble) to data.frame
   DataFrame <- as.data.frame(DataFrame)
@@ -234,6 +243,11 @@ DataFrameToHtmlTable <- function(DataFrame,
                   CellCSSCode <- ""
                   CellIcon <- "None"
 
+                  if (!is.null(ColumnMaxWidth) && !is.na(ColumnMaxWidth))
+                  {
+                      CellCSSCode <- paste0("max-width: ", ColumnMaxWidth, "ch; ")
+                  }
+
                   # Set specific column-wide CSS class for cells, if option is passed
                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -287,7 +301,8 @@ DataFrameToHtmlTable <- function(DataFrame,
                   # In case there is a column defining cell-specific CSS code for current data column
                   if (paste0("CellCSSCode.", ColumnName) %in% names(Data))
                   {
-                      CellCSSCode <- as.character(Data[i, paste0("CellCSSCode.", ColumnName)])
+                      CellCSSCode <- paste0(CellCSSCode,
+                                            as.character(Data[i, paste0("CellCSSCode.", ColumnName)]))
                   }
 
                   # Build strings for all cells in the current table row
