@@ -22,11 +22,10 @@ options(datashield.errors.print = TRUE)
 # Establish Connections to virtual servers using dsCCPhosClient::ConnectToVirtualCCP()
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#TestData <- readRDS("../dsCCPhos/Development/Data/RealData/CCPRealData_Frankfurt.rds")
-TestData <- readRDS("../dsCCPhos/Development/Data/TestData/CCPTestData.rds")
+TestData <- readRDS("../Data/CCP/CCPTestData2024.rds")
 
 
-CCPConnections <- ConnectToVirtualCCP(CCPTestData = TestData,
+CCPConnections <- ConnectToVirtualCCP(CCPData = TestData,
                                       NumberOfServers = 3,
                                       NumberOfPatientsPerServer = 1000,
                                       AddedDsPackages = "dsTidyverse")
@@ -85,10 +84,12 @@ Widget.DataSetCheck(RDSCheckData = RDSTableCheck,
                     CDSCheckData = CDSTableCheck)
 
 # Get curation reports
-# CurationReport <- ds.GetCurationReport(Module = "CCP")
+CurationReport <- ds.GetCurationReport(Module = "CCP")
+
+#CurationReport <- readRDS("../CCP.PanCancerDFCI/CCP/Reports/CurationReport_20260526.rds")
 
 Widget.CurationReport(Module = "CCP",
-                      #CurationReport = CurationReport,
+                      CurationReport = CurationReport,
                       RunAutonomously = FALSE)
 
 

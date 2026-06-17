@@ -17,7 +17,7 @@ CreateTable.Counter <- function(CounterData,
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {
   # --- For Testing Purposes ---
-  # CounterData <- CurationReport$Counter
+  #CounterData <- CurationReport$Counter
 
 #-------------------------------------------------------------------------------
 
@@ -29,6 +29,8 @@ CreateTable.Counter <- function(CounterData,
 
   PrepareReportData <- function(ReportData)
   {
+      if (is.null(ReportData)) { return(tibble()) }
+
       ReportData %>%
           mutate(Final.CountRecords.Proportion = 1 + Final.CountRecords.Change.Proportion,
                  Final.CountRootSubjects.Proportion = 1 + Final.CountRootSubjects.Change.Proportion,
