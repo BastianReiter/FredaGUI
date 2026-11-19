@@ -24,9 +24,9 @@ TestData <- readRDS("../dsCCPhos/Development/Data/TestData/CCPTestData.rds")
 
 StartFredaApp(TestData = TestData,
               RunAutonomously = FALSE)
+              # SDSTableCheckData = SDSTableCheck,
               # RDSTableCheckData = RDSTableCheck,
-              # CDSTableCheckData = CDSTableCheck,
-              # CurationReport = CurationReport)
+              # RefinementReport = RefinementReport)
 
 
 #===============================================================================
@@ -39,64 +39,64 @@ CCPConnections <- ConnectToVirtualCCP(CCPTestData = readRDS("../dsCCPhos/Develop
                                       AddedDsPackages = "dsTidyverse")
 
 #===============================================================================
-# Load Raw Data Set (RDS) from Opal data base to R sessions on servers
+# Load Source Data Set (SDS) from Opal data base to R sessions on servers
 #===============================================================================
 
-CCP.LoadRawDataSet(ServerSpecifications = NULL)
+CCP.LoadSourceDataSet(ServerSpecifications = NULL)
 
 
 #===============================================================================
-# Check RDS tables for existence and completeness
+# Check SDS tables for existence and completeness
 #===============================================================================
 
-RDSTableCheck <- dsFredaClient::ds.GetDataSetCheck(DataSetName = "CCP.RawDataSet",
+SDSTableCheck <- dsFredaClient::ds.GetDataSetCheck(DataSetName = "CCP.SourceDataSet",
                                                    Module = "CCP",
-                                                   Stage = "Raw")
+                                                   Stage = "Source")
 
-# Widget.DataSetCheck(RDSCheckData = RDSTableCheck)
+# Widget.DataSetCheck(SDSCheckData = SDSTableCheck)
 
 
 #===============================================================================
-# Optionally: Draw random sample from Raw Data Set on servers
+# Optionally: Draw random sample from Source Data Set on servers
 #===============================================================================
 
-# ds.CCP.DrawSample(RawDataSetName = "CCP.RawDataSet",
+# ds.CCP.DrawSample(SourceDataSetName = "CCP.SourceDataSet",
 #                   SampleSize = 1000,
-#                   SampleName = "RDSSample")
+#                   SampleName = "SDSSample")
 
 
 #===============================================================================
-# Transform Raw Data Set (RDS) into Curated Data Set (CDS)
+# Transform Source Data Set (SDS) into Refined Data Set (RDS)
 #===============================================================================
 
-# Transform Raw Data Set (RDS) into Curated Data Set (CDS) (using default settings)
-ds.CurateData(RawDataSetName = "CCP.RawDataSet",
+# Transform Source Data Set (SDS) into Refined Data Set (RDS) (using default settings)
+ds.RefineData(SourceDataSetName = "CCP.SourceDataSet",
               Module = "CCP",
-              OutputName = "CCP.CurationOutput")
+              OutputName = "CCP.RefinementOutput")
 
-CDSTableCheck <- ds.GetDataSetCheck(DataSetName = "CCP.CuratedDataSet",
+RDSTableCheck <- ds.GetDataSetCheck(DataSetName = "CCP.RefinedDataSet",
                                     Module = "CCP",
-                                    Stage = "Curated")
+                                    Stage = "Refined")
 
-# Get curation reports
-CurationReport <- ds.GetCurationReport(Module = "CCP")
+# Get Refinement reports
+RefinementReport <- ds.GetRefinementReport(Module = "CCP")
 
 
-Widget.CurationReport(Module = "CCP",
-                      CurationReport = CurationReport)
+Widget.RefinementReport(Module = "CCP",
+                        RefinementReport = RefinementReport)
 
 
 #===============================================================================
-# Transform Curated Data Set (CDS) into Augmented Data Set (ADS)
+# Transform Refined Data Set (RDS) into Enriched Data Set (EDS)
 #===============================================================================
 
-# Run ds.AugmentData
-ds.CCP.AugmentData(CuratedDataSetName = "CCP.CuratedDataSet")
+# Run ds.EnrichData
+ds.CCP.EnrichData(RefinedDataSetName = "CCP.RefinedDataSet")
 
 
-ADSTableCheck <- ds.GetDataSetCheck(DataSetName = "CCP.AugmentedDataSet",
+EDSTableCheck <- ds.GetDataSetCheck(DataSetName = "CCP.EnrichedDataSet",
                                     Module = "CCP",
-                                    Stage = "Augmented")
+                                    Stage = "Enrichment")
 
 
 #===============================================================================
@@ -109,7 +109,7 @@ ADSTableCheck <- ds.GetDataSetCheck(DataSetName = "CCP.AugmentedDataSet",
 ServerWorkspaceInfo <- GetServerWorkspaceInfo()
 
 
-Exploration <-dsFredaClient::GetExplorationData(OrderList = list(CCP.ADS.Diagnosis = c("ICD10Code",
+Exploration <-dsFredaClient::GetExplorationData(OrderList = list(CCP.EDS.Diagnosis = c("ICD10Code",
                                                                                        "ICDOTopographyCode",
                                                                                        "LocalizationSide",
                                                                                        "ICDOMorphologyCode",
@@ -122,7 +122,7 @@ Exploration <-dsFredaClient::GetExplorationData(OrderList = list(CCP.ADS.Diagnos
                                                                                        "PatientAgeAtDiagnosis",
                                                                                        "TimeDiagnosisToDeath",
                                                                                        "TimeFollowUp"),
-                                                                 CCP.ADS.Patient = c("Sex",
+                                                                 CCP.EDS.Patient = c("Sex",
                                                                                      "LastVitalStatus",
                                                                                      "CausesOfDeath",
                                                                                      "CountDiagnoses")))
@@ -139,8 +139,8 @@ Widget.ServerExplorer(ServerWorkspaceInfo = ServerWorkspaceInfo,
 # First Cohort Exploration
 #===============================================================================
 
-# CohortDescription <- ds.CCP.GetCohortDescription(DataSetName = "CCP.AugmentedDataSet",
-#                                                  Stage = "Augmented")
+# CohortDescription <- ds.CCP.GetCohortDescription(DataSetName = "CCP.EnrichedDataSet",
+#                                                  Stage = "Enriched")
 #
 #
 # # Transform data into display-friendly time series tables using auxiliary function 'DisplayTimeSeries()'
@@ -174,28 +174,28 @@ Widget.ServerExplorer(ServerWorkspaceInfo = ServerWorkspaceInfo,
 #                            GroupingFeature = Server)
 
 #===============================================================================
-# Process ADS tables
+# Process EDS tables
 #===============================================================================
 
-ds.GetSampleStatistics(TableName = "CCP.ADS.Diagnosis",
+ds.GetSampleStatistics(TableName = "CCP.EDS.Diagnosis",
                        FeatureName = "PatientAgeAtDiagnosis",
                        GroupingFeatureName = "TNM.M",
                        DSConnections = CCPConnections)
 
 
-ds.GetFrequencyTable(TableName = "CCP.ADS.Diagnosis",
+ds.GetFrequencyTable(TableName = "CCP.EDS.Diagnosis",
                      FeatureName = "TNM.T",
                      GroupingFeatureName = "TNM.M",
                      DSConnections = CCPConnections)
 
 
 #===============================================================================
-# Process ADS tables
+# Process EDS tables
 #===============================================================================
 
 # As of this date (07/25), table joining is not yet implemented in 'dsTidyverse' but you can use this built-in FREDA function:
-Messages <- ds.JoinTables(TableNameA = "CCP.ADS.Patient",
-                          TableNameB = "CCP.ADS.Diagnosis",
+Messages <- ds.JoinTables(TableNameA = "CCP.EDS.Patient",
+                          TableNameB = "CCP.EDS.Diagnosis",
                           ByStatement = "PatientID",
                           OutputName = "PatDiag")
 
@@ -216,11 +216,11 @@ dsTidyverseClient::ds.filter(df.name = "PatDiag",
 # Perform exemplary analyses
 #===============================================================================
 
-CrossTab <- ds.GetCrossTab(TableName = "CCP.ADS.Patient",
+CrossTab <- ds.GetCrossTab(TableName = "CCP.EDS.Patient",
                            FeatureNames = c("Sex", "LastVitalStatus"),
                            RemoveNA = TRUE)
 
-ds.MutateTable(TableName = "ADS_Diagnosis",
+ds.MutateTable(TableName = "EDS_Diagnosis",
                MutateExpression = "UICCStageClassification = case_when(str_starts(TNM_T, '3') ~ 'III', .default = '<NA>')",
                OutputName = "TestUICC")
 

@@ -6,8 +6,8 @@
 #' @param DSConnections \code{list} of \code{DSConnection} objects
 #' @param ServerSpecifications \code{data.frame}
 #' @param TestData \code{list} - Optional test data
-#' @param RDSCheckData \code{list} - Optional RDSCheck data
-#' @param CurationReport \code{list} - Optional CurationReport data
+#' @param SDSCheckData \code{list} - Optional SDSCheck data
+#' @param RefinementReport \code{list} - Optional RefinementReport data
 #'
 #' @export
 #'
@@ -15,10 +15,10 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 StartFredaApp <- function(#--- Arguments for app itself ---
                            TestData = NULL,
+                           SDSCheckData = NULL,
                            RDSCheckData = NULL,
-                           CDSCheckData = NULL,
-                           ADSCheckData = NULL,
-                           CurationReport = NULL,
+                           EDSCheckData = NULL,
+                           RefinementReport = NULL,
                            DSConnections = NULL,
                            ServerSpecifications = NULL,
                            ServerWorkspaceInfo = NULL,
@@ -43,10 +43,10 @@ StartFredaApp <- function(#--- Arguments for app itself ---
       # Start Freda app
       shiny::shinyApp(ui = MainUIComponent(),
                       server = MainServerComponent(TestData = TestData,
+                                                   SDSCheckData = SDSCheckData,
                                                    RDSCheckData = RDSCheckData,
-                                                   CDSCheckData = CDSCheckData,
-                                                   ADSCheckData = ADSCheckData,
-                                                   CurationReport = CurationReport,
+                                                   EDSCheckData = EDSCheckData,
+                                                   RefinementReport = RefinementReport,
                                                    DSConnections = DSConnections,
                                                    ServerSpecifications = ServerSpecifications,
                                                    ServerWorkspaceInfo = ServerWorkspaceInfo))

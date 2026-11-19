@@ -34,8 +34,8 @@ UIPagePrepare <- function()
                           uiOutput("Step_Connect"),
                           uiOutput("Step_CheckServerRequirements"),
                           uiOutput("Step_LoadData"),
-                          uiOutput("Step_CurateData"),
-                          uiOutput("Step_AugmentData")),
+                          uiOutput("Step_RefineData"),
+                          uiOutput("Step_EnrichData")),
 
                       div(id = "TerminalContainer",
                           style = "height: 100%;
@@ -49,13 +49,13 @@ UIPagePrepare <- function()
                                               Mod.ProcessingTerminal.UI("LoadData",
                                                                        ButtonLabel = "Load data"))),
 
-                          shinyjs::hidden(div(id = "Terminal_CurateData",
-                                              Mod.ProcessingTerminal.UI("CurateData",
-                                                                       ButtonLabel = "Start data curation"))),
+                          shinyjs::hidden(div(id = "Terminal_RefineData",
+                                              Mod.ProcessingTerminal.UI("RefineData",
+                                                                       ButtonLabel = "Start data Refinement"))),
 
-                          shinyjs::hidden(div(id = "Terminal_AugmentData",
-                                              Mod.ProcessingTerminal.UI("AugmentData",
-                                                                       ButtonLabel = "Start data augmentation")))))))),
+                          shinyjs::hidden(div(id = "Terminal_EnrichData",
+                                              Mod.ProcessingTerminal.UI("EnrichData",
+                                                                       ButtonLabel = "Start data Enrichment")))))))),
 
 
       #-----------------------------------------------------------------------
@@ -152,12 +152,12 @@ UIPagePrepare <- function()
                            overflow: auto;
                            margin: 0;",
 
-                  shiny.semantic::tabset(tabs = list(list(menu = "Raw Data Set (RDS)",
+                  shiny.semantic::tabset(tabs = list(list(menu = "Source Data Set (SDS)",
+                                                          content = Mod.DataSetCheck.UI("SDSCheck")),
+                                                     list(menu = "Refined Data Set (RDS)",
                                                           content = Mod.DataSetCheck.UI("RDSCheck")),
-                                                     list(menu = "Curated Data Set (CDS)",
-                                                          content = Mod.DataSetCheck.UI("CDSCheck")),
-                                                     list(menu = "Augmented Data Set (ADS)",
-                                                          content = Mod.DataSetCheck.UI("ADSCheck"))))))),
+                                                     list(menu = "Enriched Data Set (EDS)",
+                                                          content = Mod.DataSetCheck.UI("EDSCheck"))))))),
 
 
       #-----------------------------------------------------------------------

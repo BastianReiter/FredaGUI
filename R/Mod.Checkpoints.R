@@ -77,8 +77,8 @@ Mod.Checkpoints.Server <- function(id)
                                                                                                     CheckPackageAvailability = "box",
                                                                                                     CheckFunctionAvailability = "cogs",
                                                                                                     CheckOpalTableAvailability = "server",
-                                                                                                    CheckCurationCompletion = "wrench",
-                                                                                                    CheckAugmentationCompletion = "magic"),
+                                                                                                    CheckRefinementCompletion = "wrench",
+                                                                                                    CheckEnrichmentCompletion = "magic"),
                                                                                     SemanticTableCSSClass = "ui small compact celled structured table",
                                                                                     TurnColorValuesIntoDots = TRUE)
                                                            }

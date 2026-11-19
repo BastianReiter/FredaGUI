@@ -6,10 +6,10 @@
 \usage{
 StartFredaApp(
   TestData = NULL,
+  SDSCheckData = NULL,
   RDSCheckData = NULL,
-  CDSCheckData = NULL,
-  ADSCheckData = NULL,
-  CurationReport = NULL,
+  EDSCheckData = NULL,
+  RefinementReport = NULL,
   DSConnections = NULL,
   ServerSpecifications = NULL,
   ServerWorkspaceInfo = NULL,
@@ -22,9 +22,9 @@ StartFredaApp(
 \arguments{
 \item{TestData}{\code{list} - Optional test data}
 
-\item{RDSCheckData}{\code{list} - Optional RDSCheck data}
+\item{SDSCheckData}{\code{list} - Optional SDSCheck data}
 
-\item{CurationReport}{\code{list} - Optional CurationReport data}
+\item{RefinementReport}{\code{list} - Optional RefinementReport data}
 
 \item{DSConnections}{\code{list} of \code{DSConnection} objects}
 

@@ -43,65 +43,65 @@ CCPConnections <- ConnectToVirtualCCP(CCPData = TestData,
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Load Raw Data Set (RDS) from Opal data base to R sessions on servers
+# Load Source Data Set (SDS) from Opal data base to R sessions on servers
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-CCP.LoadRawDataSet(ServerSpecifications = NULL)
+CCP.LoadSourceDataSet(ServerSpecifications = NULL)
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Check RDS tables for existence and completeness
+# Check SDS tables for existence and completeness
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-RDSTableCheck <- dsFredaClient::ds.GetDataSetCheck(DataSetName = "CCP.RawDataSet",
+SDSTableCheck <- dsFredaClient::ds.GetDataSetCheck(DataSetName = "CCP.SourceDataSet",
                                                    Module = "CCP",
-                                                   Stage = "Raw")
+                                                   Stage = "Source")
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Optionally: Draw random sample from Raw Data Set on servers
+# Optionally: Draw random sample from Source Data Set on servers
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# ds.CCP.DrawSample(RawDataSetName = "CCP.RawDataSet",
+# ds.CCP.DrawSample(SourceDataSetName = "CCP.SourceDataSet",
 #                   SampleSize = 1000,
-#                   SampleName = "RDSSample")
+#                   SampleName = "SDSSample")
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Transform Raw Data Set (RDS) into Curated Data Set (CDS)
+# Transform Source Data Set (SDS) into Refined Data Set (RDS)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# Transform Raw Data Set (RDS) into Curated Data Set (CDS) (using default settings)
-ds.CurateData(RawDataSetName = "CCP.RawDataSet",
+# Transform Source Data Set (SDS) into Refined Data Set (RDS) (using default settings)
+ds.RefineData(SourceDataSetName = "CCP.SourceDataSet",
               Module = "CCP",
-              OutputName = "CCP.CurationOutput")
+              OutputName = "CCP.RefinementOutput")
 
-CDSTableCheck <- ds.GetDataSetCheck(DataSetName = "CCP.CuratedDataSet",
+RDSTableCheck <- ds.GetDataSetCheck(DataSetName = "CCP.RefinedDataSet",
                                     Module = "CCP",
-                                    Stage = "Curated")
+                                    Stage = "Refined")
 
-Widget.DataSetCheck(RDSCheckData = RDSTableCheck,
-                    CDSCheckData = CDSTableCheck)
+Widget.DataSetCheck(SDSCheckData = SDSTableCheck,
+                    RDSCheckData = RDSTableCheck)
 
-# Get curation reports
-CurationReport <- ds.GetCurationReport(Module = "CCP")
+# Get Refinement reports
+RefinementReport <- ds.GetRefinementReport(Module = "CCP")
 
-#CurationReport <- readRDS("../CCP.PanCancerDFCI/CCP/Reports/CurationReport_20260526.rds")
+#RefinementReport <- readRDS("../CCP.PanCancerDFCI/CCP/Reports/RefinementReport_20260526.rds")
 
-Widget.CurationReport(Module = "CCP",
-                      CurationReport = CurationReport,
-                      RunAutonomously = FALSE)
+Widget.RefinementReport(Module = "CCP",
+                        RefinementReport = RefinementReport,
+                        RunAutonomously = FALSE)
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Transform Curated Data Set (CDS) into Augmented Data Set (ADS)
+# Transform Refined Data Set (RDS) into Enriched Data Set (EDS)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# Run ds.AugmentData
-ds.CCP.AugmentData(CuratedDataSetName = "CCP.CuratedDataSet")
+# Run ds.EnrichData
+ds.CCP.EnrichData(RefinedDataSetName = "CCP.RefinedDataSet")
 
 
-ADSTableCheck <- ds.CheckDataSet(DataSetName = "AugmentedDataSet")
+EDSTableCheck <- ds.CheckDataSet(DataSetName = "EnrichedDataSet")
 
 
 
@@ -120,7 +120,7 @@ ADSTableCheck <- ds.CheckDataSet(DataSetName = "AugmentedDataSet")
 ServerWorkspaceInfo <- GetServerWorkspaceInfo()
 
 
-Exploration <-dsFredaClient::GetExplorationData(OrderList = list(CCP.ADS.Diagnosis = c("ICD10Code",
+Exploration <-dsFredaClient::GetExplorationData(OrderList = list(CCP.EDS.Diagnosis = c("ICD10Code",
                                                                                        "ICDOTopographyCode",
                                                                                        "LocalizationSide",
                                                                                        "ICDOMorphologyCode",
@@ -133,7 +133,7 @@ Exploration <-dsFredaClient::GetExplorationData(OrderList = list(CCP.ADS.Diagnos
                                                                                        "PatientAgeAtDiagnosis",
                                                                                        "TimeDiagnosisToDeath",
                                                                                        "TimeFollowUp"),
-                                                                 CCP.ADS.Patient = c("Sex",
+                                                                 CCP.EDS.Patient = c("Sex",
                                                                                      "LastVitalStatus",
                                                                                      "CausesOfDeath",
                                                                                      "CountDiagnoses")))
@@ -149,7 +149,7 @@ Widget.ServerExplorer(ServerWorkspaceInfo = ServerWorkspaceInfo,
 
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Process ADS tables
+# Process EDS tables
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 

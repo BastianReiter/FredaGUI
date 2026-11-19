@@ -15,9 +15,9 @@
 #' @author Bastian Reiter
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Widget.DataSetCheck <- function(#--- Arguments for app itself ---
+                                SDSCheckData = NULL,
                                 RDSCheckData = NULL,
-                                CDSCheckData = NULL,
-                                ADSCheckData = NULL,
+                                EDSCheckData = NULL,
                                 DSConnections = NULL,
                                 #--- Arguments for app wrapper ---
                                 EndProcessWhenClosingApp = TRUE,
@@ -35,31 +35,31 @@ Widget.DataSetCheck <- function(#--- Arguments for app itself ---
               is.flag(RunAutonomously),
               is.flag(RunInViewer))
 
+  if (!is.null(SDSCheckData)) assert_that(is.list(SDSCheckData))
   if (!is.null(RDSCheckData)) assert_that(is.list(RDSCheckData))
-  if (!is.null(CDSCheckData)) assert_that(is.list(CDSCheckData))
-  if (!is.null(ADSCheckData)) assert_that(is.list(ADSCheckData))
+  if (!is.null(EDSCheckData)) assert_that(is.list(EDSCheckData))
 
 #-------------------------------------------------------------------------------
 
   # If no report data is passed, get it programmatically
-  if (is.null(RDSCheckData) & is.null(CDSCheckData) & is.null(ADSCheckData))
+  if (is.null(SDSCheckData) & is.null(RDSCheckData) & is.null(EDSCheckData))
   {
       # Check validity of 'DSConnections' or find them programmatically if none are passed
       DSConnections <- CheckDSConnections(DSConnections)
 
-      RDSCheckData <- dsFredaClient::ds.GetDataSetCheck(DataSetName = "CCP.RawDataSet",
+      SDSCheckData <- dsFredaClient::ds.GetDataSetCheck(DataSetName = "CCP.SourceDataSet",
                                                         Module = "CCP",
-                                                        Stage = "Raw",
+                                                        Stage = "Source",
                                                         DSConnections = DSConnections)
 
-      CDSCheckData <- dsFredaClient::ds.GetDataSetCheck(DataSetName = "CCP.CuratedDataSet",
+      RDSCheckData <- dsFredaClient::ds.GetDataSetCheck(DataSetName = "CCP.RefinedDataSet",
                                                         Module = "CCP",
-                                                        Stage = "Curated",
+                                                        Stage = "Refined",
                                                         DSConnections = DSConnections)
 
-      ADSCheckData <- dsFredaClient::ds.GetDataSetCheck(DataSetName = "CCP.AugmentedDataSet",
+      EDSCheckData <- dsFredaClient::ds.GetDataSetCheck(DataSetName = "CCP.EnrichedDataSet",
                                                         Module = "CCP",
-                                                        Stage = "Augmented",
+                                                        Stage = "Enriched",
                                                         DSConnections = DSConnections)
   }
 
@@ -83,12 +83,12 @@ Widget.DataSetCheck <- function(#--- Arguments for app itself ---
                   div(style = "overflow: auto;
                                width: 100%;",
 
-                      shiny.semantic::tabset(tabs = list(list(menu = "Raw Data Set (RDS)",
+                      shiny.semantic::tabset(tabs = list(list(menu = "Source Data Set (SDS)",
+                                                              content = Mod.DataSetCheck.UI(ns("SDSCheck"))),
+                                                         list(menu = "Refined Data Set (RDS)",
                                                               content = Mod.DataSetCheck.UI(ns("RDSCheck"))),
-                                                         list(menu = "Curated Data Set (CDS)",
-                                                              content = Mod.DataSetCheck.UI(ns("CDSCheck"))),
-                                                         list(menu = "Augmented Data Set (ADS)",
-                                                              content = Mod.DataSetCheck.UI(ns("ADSCheck")))),
+                                                         list(menu = "Enriched Data Set (EDS)",
+                                                              content = Mod.DataSetCheck.UI(ns("EDSCheck")))),
                                              id = ns("Tabset"))))
          }
 
@@ -107,18 +107,18 @@ Widget.DataSetCheck <- function(#--- Arguments for app itself ---
         waiter::waiter_hide()
 
         # Initialize global objects
+        session$userData$SDSCheckData <- reactiveVal(NULL)
         session$userData$RDSCheckData <- reactiveVal(NULL)
-        session$userData$CDSCheckData <- reactiveVal(NULL)
-        session$userData$ADSCheckData <- reactiveVal(NULL)
+        session$userData$EDSCheckData <- reactiveVal(NULL)
 
         # output$TestMonitor <- renderText({  req(session$userData$ServerWorkspaceInfo())
         #                                     paste0(names(session$userData$ServerWorkspaceInfo()), collapse = ", ") })
 
         # 'Mod.Initialize' assigns content to session$userData objects at app start
         Mod.Initialize(id = "Initialize",
+                       SDSCheckData = SDSCheckData,
                        RDSCheckData = RDSCheckData,
-                       CDSCheckData = CDSCheckData,
-                       ADSCheckData = ADSCheckData)
+                       EDSCheckData = EDSCheckData)
 
         #-----------------------------------------------------------------------
 
@@ -126,9 +126,9 @@ Widget.DataSetCheck <- function(#--- Arguments for app itself ---
         WidgetServerLogic <- function(session)
                              {
                                 # --- Call modules: Data Set Checks ---
+                                Mod.DataSetCheck.Server(id = "SDSCheck", DataSetCheckData = session$userData$SDSCheckData)
                                 Mod.DataSetCheck.Server(id = "RDSCheck", DataSetCheckData = session$userData$RDSCheckData)
-                                Mod.DataSetCheck.Server(id = "CDSCheck", DataSetCheckData = session$userData$CDSCheckData)
-                                Mod.DataSetCheck.Server(id = "ADSCheck", DataSetCheckData = session$userData$ADSCheckData)
+                                Mod.DataSetCheck.Server(id = "EDSCheck", DataSetCheckData = session$userData$EDSCheckData)
                               }
 
         # Call Widget frame module and pass widget-specific server logic

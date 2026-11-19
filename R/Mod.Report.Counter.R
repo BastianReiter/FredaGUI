@@ -45,7 +45,7 @@ Mod.Report.Counter.Server <- function(id)
 
                   WaiterScreen <- CreateWaiterScreen(ID = ns("CounterTable"))
 
-                  CounterData <- isolate(session$userData$CurationReport()$Counter)
+                  CounterData <- isolate(session$userData$EnrichmentReport()$Counter)
 
                   # Toggle button functionality
                   observe({ if (input$Tgl.ShowAllStages == FALSE)

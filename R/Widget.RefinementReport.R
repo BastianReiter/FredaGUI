@@ -1,9 +1,9 @@
 
-#' Widget.CurationReport
+#' Widget.RefinementReport
 #'
-#' Launch a Shiny app that serves as GUI for Curation Report data.
+#' Launch a Shiny app that serves as GUI for Refinement Report data.
 #'
-#' @param CurationReport \code{list}
+#' @param RefinementReport \code{list}
 #' @param DSConnections \code{list} of \code{DSConnection} objects
 #' @param DS.async \code{logical} - Value of argument 'async' in \code{DSI::datashield.assign()} / \code{DSI::datashield.aggregate()} - Default: \code{FALSE}
 #' @param RunAutonomously \code{logical} indicating whether the Shiny app is hosted by a background process (default) available as a URL via web browsers or - if set to \code{FALSE} - is hosted by the current running R session.
@@ -16,21 +16,21 @@
 #'
 #' @author Bastian Reiter
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Widget.CurationReport <- function(#--- Arguments for app itself ---
-                                  Module = "CCP",
-                                  CurationReport = NULL,
-                                  DSConnections = NULL,
-                                  DS.async = FALSE,
-                                  #--- Arguments for app wrapper ---
-                                  EndProcessWhenClosingApp = TRUE,
-                                  RunAutonomously = FALSE,
-                                  RunInViewer = FALSE,
-                                  ...)
+Widget.RefinementReport <- function(#--- Arguments for app itself ---
+                                    Module = "CCP",
+                                    RefinementReport = NULL,
+                                    DSConnections = NULL,
+                                    DS.async = FALSE,
+                                    #--- Arguments for app wrapper ---
+                                    EndProcessWhenClosingApp = TRUE,
+                                    RunAutonomously = FALSE,
+                                    RunInViewer = FALSE,
+                                    ...)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {
   # --- For Testing Purposes ---
   # Module <- "CCP"
-  # CurationReport <- CurationReport
+  # RefinementReport <- RefinementReport
   # DSConnections <- CCPConnections
   # DS.async <- FALSE
   # EndProcessWhenClosingApp <- TRUE
@@ -44,19 +44,19 @@ Widget.CurationReport <- function(#--- Arguments for app itself ---
               is.flag(RunAutonomously),
               is.flag(RunInViewer))
 
-  if (!is.null(CurationReport)) assert_that(is.list(CurationReport))
+  if (!is.null(RefinementReport)) assert_that(is.list(RefinementReport))
 
 #-------------------------------------------------------------------------------
 
-  # If no CurationReport data is passed, get it programmatically
-  if (is.null(CurationReport))
+  # If no RefinementReport data is passed, get it programmatically
+  if (is.null(RefinementReport))
   {
       # Check validity of 'DSConnections' or find them programmatically if none are passed
       DSConnections <- CheckDSConnections(DSConnections)
 
-      CurationReport <- dsFredaClient::ds.GetCurationReport(Module = Module,
-                                                            DSConnections = DSConnections,
-                                                            DS.async = DS.async)
+      RefinementReport <- dsFredaClient::ds.GetRefinementReport(Module = Module,
+                                                                DSConnections = DSConnections,
+                                                                DS.async = DS.async)
   }
 
 #-------------------------------------------------------------------------------
@@ -89,8 +89,8 @@ Widget.CurationReport <- function(#--- Arguments for app itself ---
           }
 
           # Call Widget frame module UI and pass widget-specific UI layout
-          Mod.Widget.UI(id = "Widget.CurationReport",
-                        Title = "FREDA Curation Report",
+          Mod.Widget.UI(id = "Widget.RefinementReport",
+                        Title = "FREDA Refinement Report",
                         WidgetMainUI = Layout)
       }
 
@@ -103,16 +103,16 @@ Widget.CurationReport <- function(#--- Arguments for app itself ---
           waiter::waiter_hide()
 
           # Initialize global objects
-          session$userData$CurationReport <- reactiveVal(NULL)
+          session$userData$RefinementReport <- reactiveVal(NULL)
           session$userData$DSConnections <- reactiveVal(NULL)
 
-          # output$TestMonitor <- renderText({  req(session$userData$CurationReport())
-          #                                     paste0(names(session$userData$CurationReport()), collapse = ", ")
+          # output$TestMonitor <- renderText({  req(session$userData$RefinementReport())
+          #                                     paste0(names(session$userData$RefinementReport()), collapse = ", ")
           #                                   })
 
           # 'Mod.Initialize' assigns content to session$userData objects at app start
           Mod.Initialize(id = "Initialize",
-                         CurationReport = CurationReport,
+                         RefinementReport = RefinementReport,
                          DSConnections = DSConnections)
 
           #---------------------------------------------------------------------
@@ -127,7 +127,7 @@ Widget.CurationReport <- function(#--- Arguments for app itself ---
                                 }
 
           # Call Widget frame module and pass widget-specific server logic
-          Mod.Widget.Server(id = "Widget.CurationReport",
+          Mod.Widget.Server(id = "Widget.RefinementReport",
                             WidgetServerLogic)
 
           #---------------------------------------------------------------------

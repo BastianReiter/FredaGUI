@@ -7,8 +7,8 @@ export(DataFrameToHtmlTable)
 export(MessageToHtml)
 export(RunAutonomousApp)
 export(StartFredaApp)
-export(Widget.CurationReport)
 export(Widget.DataSetCheck)
+export(Widget.RefinementReport)
 export(Widget.ServerExplorer)
 import(assertthat)
 import(dplyr)
@@ -17,35 +17,34 @@ import(reactable)
 import(shiny)
 import(stringr)
 import(tidyr)
-importFrom(dsFredaClient,AddCumulativeRow)
-importFrom(dsFredaClient,CheckDSConnections)
-importFrom(dsFredaClient,DisplayTimeSeries)
-importFrom(dsFredaClient,ExploreFeature)
-importFrom(dsFredaClient,ExportPlot)
-importFrom(dsFredaClient,GetEligibleValues)
-importFrom(dsFredaClient,GetExplorationData)
-importFrom(dsFredaClient,GetServerOpalDBInfo)
-importFrom(dsFredaClient,GetServerWorkspaceInfo)
-importFrom(dsFredaClient,MakeBoxPlot)
-importFrom(dsFredaClient,MakeColumnPlot)
-importFrom(dsFredaClient,MakeFunctionMessage)
-importFrom(dsFredaClient,ds.CurateData)
-importFrom(dsFredaClient,ds.ExtractFromList)
-importFrom(dsFredaClient,ds.FilterTable)
-importFrom(dsFredaClient,ds.GetCrossTab)
-importFrom(dsFredaClient,ds.GetCurationReport)
-importFrom(dsFredaClient,ds.GetDataSetCheck)
-importFrom(dsFredaClient,ds.GetFeatureInfo)
-importFrom(dsFredaClient,ds.GetFrequencyTable)
-importFrom(dsFredaClient,ds.GetObjectMetaData)
-importFrom(dsFredaClient,ds.GetObjectStatus)
-importFrom(dsFredaClient,ds.GetSampleStatistics)
-importFrom(dsFredaClient,ds.GetTTEModel)
-importFrom(dsFredaClient,ds.GetTableCheck)
-importFrom(dsFredaClient,ds.JoinTables)
-importFrom(dsFredaClient,ds.MakeList)
-importFrom(dsFredaClient,ds.MutateTable)
-importFrom(dsFredaClient,ds.PrepareRawData)
-importFrom(dsFredaClient,ggTheme)
-importFrom(dsFredaClient,gtTheme)
+importFrom(dsFredaClient,
+  AddCumulativeRow,
+  CheckDSConnections,
+  DisplayTimeSeries,
+  ExploreFeature,
+  ExportPlot,
+  GetEligibleValues,
+  GetExplorationData,
+  GetServerOpalDBInfo,
+  GetServerWorkspaceInfo,
+  MakeBoxPlot,
+  MakeColumnPlot,
+  MakeFunctionMessage,
+  ds.ExtractFromList,
+  ds.FilterTable,
+  ds.GetCrossTab,
+  ds.GetDataSetCheck,
+  ds.GetFeatureInfo,
+  ds.GetFrequencyTable,
+  ds.GetObjectMetaData,
+  ds.GetObjectStatus,
+  ds.GetSampleStatistics,
+  ds.GetTTEModel,
+  ds.GetTableCheck,
+  ds.JoinTables,
+  ds.MakeList,
+  ds.MutateTable,
+  ggTheme,
+  gtTheme
+)
 importFrom(magrittr,"%>%")

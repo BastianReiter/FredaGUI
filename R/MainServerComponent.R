@@ -10,10 +10,10 @@
 #' @author Bastian Reiter
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 MainServerComponent <- function(TestData = NULL,
+                                SDSCheckData = NULL,
                                 RDSCheckData = NULL,
-                                CDSCheckData = NULL,
-                                ADSCheckData = NULL,
-                                CurationReport = NULL,
+                                EDSCheckData = NULL,
+                                RefinementReport = NULL,
                                 DSConnections = NULL,
                                 ServerSpecifications = NULL,
                                 ServerWorkspaceInfo = NULL)
@@ -33,12 +33,12 @@ MainServerComponent <- function(TestData = NULL,
     waiter::waiter_hide()
 
     # Initialize global objects
-    session$userData$ADSCheckData <- reactiveVal(NULL)
-    session$userData$CDSCheckData <- reactiveVal(NULL)
-    session$userData$Checkpoints <- reactiveVal(NULL)
-    session$userData$CurationReport <- reactiveVal(NULL)
-    session$userData$DSConnections <- reactiveVal(NULL)
+    session$userData$EDSCheckData <- reactiveVal(NULL)
     session$userData$RDSCheckData <- reactiveVal(NULL)
+    session$userData$Checkpoints <- reactiveVal(NULL)
+    session$userData$RefinementReport <- reactiveVal(NULL)
+    session$userData$DSConnections <- reactiveVal(NULL)
+    session$userData$SDSCheckData <- reactiveVal(NULL)
     session$userData$ServerOpalDBInfo <- reactiveVal(NULL)
     session$userData$ServerSpecifications <- reactiveVal(NULL)
     session$userData$ServerWorkspaceInfo <- reactiveVal(NULL)
@@ -49,12 +49,12 @@ MainServerComponent <- function(TestData = NULL,
     # --- Call module: Initialize ---
     # Assigns content to session$userData objects at app start
     Mod.Initialize(id = "Initialize",
-                   ADSCheckData = ADSCheckData,
+                   EDSCheckData = EDSCheckData,
                    TestData = TestData,
-                   CDSCheckData = CDSCheckData,
-                   CurationReport = CurationReport,
-                   DSConnections = DSConnections,
                    RDSCheckData = RDSCheckData,
+                   RefinementReport = RefinementReport,
+                   DSConnections = DSConnections,
+                   SDSCheckData = SDSCheckData,
                    ServerSpecifications = ServerSpecifications,
                    ServerWorkspaceInfo = ServerWorkspaceInfo)
 
@@ -137,8 +137,8 @@ MainServerComponent <- function(TestData = NULL,
     StatusConnected <- reactiveVal(FALSE)
     StatusServerRequirementsChecked <- Mod.ProcessingTerminal.Server(id = "CheckServerRequirements")
     StatusDataLoaded <- Mod.ProcessingTerminal.Server(id = "LoadData")
-    StatusDataCurated <- Mod.ProcessingTerminal.Server(id = "CurateData")
-    StatusDataAugmented <- Mod.ProcessingTerminal.Server(id = "AugmentData")
+    StatusDataRefined <- Mod.ProcessingTerminal.Server(id = "RefineData")
+    StatusDataEnriched <- Mod.ProcessingTerminal.Server(id = "EnrichData")
 
     SelectedProcessingStep <- reactiveVal("None")
 
@@ -156,9 +156,9 @@ MainServerComponent <- function(TestData = NULL,
     Mod.ServerExplorer.Server("Prepare-ServerExplorer")
 
     # --- Call modules: DataSet Monitors ---
+    Mod.DataSetCheck.Server("SDSCheck", DataSetCheckData = session$userData$SDSCheckData)
     Mod.DataSetCheck.Server("RDSCheck", DataSetCheckData = session$userData$RDSCheckData)
-    Mod.DataSetCheck.Server("CDSCheck", DataSetCheckData = session$userData$CDSCheckData)
-    Mod.DataSetCheck.Server("ADSCheck", DataSetCheckData = session$userData$ADSCheckData)
+    Mod.DataSetCheck.Server("EDSCheck", DataSetCheckData = session$userData$EDSCheckData)
 
     # --- Call module: Report.Counter ---
     Mod.Report.Counter.Server("Report.Counter")
@@ -201,8 +201,8 @@ MainServerComponent <- function(TestData = NULL,
         # shinyjs::onclick(id = StepID,
         #                  expr = { if (StepID == "Step_CheckServerRequirements") { SelectedProcessingStep("CheckServerRequirements") }
         #                           if (StepID == "Step_LoadData") { SelectedProcessingStep("LoadData") }
-        #                           if (StepID == "Step_CurateData") { SelectedProcessingStep("CurateData") }
-        #                           if (StepID == "Step_AugmentData") { SelectedProcessingStep("AugmentData") } })
+        #                           if (StepID == "Step_RefineData") { SelectedProcessingStep("RefineData") }
+        #                           if (StepID == "Step_EnrichData") { SelectedProcessingStep("EnrichData") } })
     }
 
 
@@ -242,8 +242,8 @@ MainServerComponent <- function(TestData = NULL,
             shinyjs::onclick(id = StepID,
                              expr = { if (StepID == "Step_CheckServerRequirements") { SelectedProcessingStep("CheckServerRequirements") }
                                       if (StepID == "Step_LoadData") { SelectedProcessingStep("LoadData") }
-                                      if (StepID == "Step_CurateData") { SelectedProcessingStep("CurateData") }
-                                      if (StepID == "Step_AugmentData") { SelectedProcessingStep("AugmentData") } })
+                                      if (StepID == "Step_RefineData") { SelectedProcessingStep("RefineData") }
+                                      if (StepID == "Step_EnrichData") { SelectedProcessingStep("EnrichData") } })
         }
 
         if (StepState == "Selected")
@@ -300,16 +300,16 @@ MainServerComponent <- function(TestData = NULL,
                                                                HeaderText = "Check server requirements") })
 
     output$Step_LoadData <- renderUI({ MakeStep(IconClass = "database",
-                                                HeaderText = "Load raw data",
+                                                HeaderText = "Load source data",
                                                 DescriptionText = "From Opal DB into R session") })
 
-    output$Step_CurateData <- renderUI({ MakeStep(IconClass = "wrench",
-                                                  HeaderText = "Data curation",
-                                                  DescriptionText = "Transform raw into curated data") })
+    output$Step_RefineData <- renderUI({ MakeStep(IconClass = "wrench",
+                                                  HeaderText = "Data Refinement",
+                                                  DescriptionText = "Transform source into refined data") })
 
-    output$Step_AugmentData <- renderUI({ MakeStep(IconClass = "magic",
-                                                   HeaderText = "Data augmentation",
-                                                   DescriptionText = "Transform into augmented data") })
+    output$Step_EnrichData <- renderUI({ MakeStep(IconClass = "magic",
+                                                   HeaderText = "Data Enrichment",
+                                                   DescriptionText = "Transform into enriched data") })
 
 
 
@@ -326,12 +326,12 @@ MainServerComponent <- function(TestData = NULL,
                                       condition = (SelectedProcessingStep() == "LoadData")) })
 
     observe({ shinyjs::toggleCssClass(class = "StepSelected",
-                                      selector = "#Step_CurateData > div",
-                                      condition = (SelectedProcessingStep() == "CurateData")) })
+                                      selector = "#Step_RefineData > div",
+                                      condition = (SelectedProcessingStep() == "RefineData")) })
 
     observe({ shinyjs::toggleCssClass(class = "StepSelected",
-                                      selector = "#Step_AugmentData > div",
-                                      condition = (SelectedProcessingStep() == "AugmentData")) })
+                                      selector = "#Step_EnrichData > div",
+                                      condition = (SelectedProcessingStep() == "EnrichData")) })
 
 
     # Toggle visibility of terminals when selection of processing step occurs
@@ -339,8 +339,8 @@ MainServerComponent <- function(TestData = NULL,
 
     observe({ if (SelectedProcessingStep() == "CheckServerRequirements") { ToggleTerminal("Terminal_CheckServerRequirements") }
               if (SelectedProcessingStep() == "LoadData") { ToggleTerminal("Terminal_LoadData") }
-              if (SelectedProcessingStep() == "CurateData") { ToggleTerminal("Terminal_CurateData") }
-              if (SelectedProcessingStep() == "AugmentData") { ToggleTerminal("Terminal_AugmentData") } }) %>% bindEvent(SelectedProcessingStep())
+              if (SelectedProcessingStep() == "RefineData") { ToggleTerminal("Terminal_RefineData") }
+              if (SelectedProcessingStep() == "EnrichData") { ToggleTerminal("Terminal_EnrichData") } }) %>% bindEvent(SelectedProcessingStep())
 
 
 
@@ -364,28 +364,28 @@ MainServerComponent <- function(TestData = NULL,
     observe({ ToggleStepCompletion(StepID = "Step_LoadData",
                                    StepCompleted = StatusDataLoaded(),
                                    IconClass = "database")
-              ToggleStepState(StepID = "Step_CurateData",
+              ToggleStepState(StepID = "Step_RefineData",
                               StepState = "Accessible") }) %>% bindEvent(StatusDataLoaded())
 
 
-    observe({ ToggleStepCompletion(StepID = "Step_CurateData",
-                                   StepCompleted = StatusDataCurated(),
+    observe({ ToggleStepCompletion(StepID = "Step_RefineData",
+                                   StepCompleted = StatusDataRefined(),
                                    IconClass = "wrench")
-              ToggleStepState(StepID = "Step_AugmentData",
-                              StepState = "Accessible") }) %>% bindEvent(StatusDataCurated())
+              ToggleStepState(StepID = "Step_EnrichData",
+                              StepState = "Accessible") }) %>% bindEvent(StatusDataRefined())
 
 
-    observe({ ToggleStepCompletion(StepID = "Step_AugmentData",
-                                   StepCompleted = StatusDataAugmented(),
-                                   IconClass = "magic") }) %>% bindEvent(StatusDataAugmented())
+    observe({ ToggleStepCompletion(StepID = "Step_EnrichData",
+                                   StepCompleted = StatusDataEnriched(),
+                                   IconClass = "magic") }) %>% bindEvent(StatusDataEnriched())
 
 
 
     InitiateStepJS(StepID = "Step_Connect")
     InitiateStepJS(StepID = "Step_CheckServerRequirements")
     InitiateStepJS(StepID = "Step_LoadData")
-    InitiateStepJS(StepID = "Step_CurateData")
-    InitiateStepJS(StepID = "Step_AugmentData")
+    InitiateStepJS(StepID = "Step_RefineData")
+    InitiateStepJS(StepID = "Step_EnrichData")
 
 
 
