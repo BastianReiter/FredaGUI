@@ -8,19 +8,19 @@
 
 TestData <- readRDS("../dsCCPhos/Development/Data/TestData/CCPTestData.rds")
 
-CurationReport <- readRDS(file = "C:/Users/Basti/OneDrive/ARBEIT/IDMKD/Projekte/CCP/CDSG Projekte/EvaSchaefer/CurationReport_20250731.rds")
-#RDSTableCheck <- readRDS(file = "C:/Users/Basti/OneDrive/ARBEIT/IDMKD/Projekte/CCP/CDSG Projekte/EvaSchaefer/RDSTableCheck_20250731.rds")
-CDSTableCheck <- readRDS(file = "C:/Users/Basti/OneDrive/ARBEIT/IDMKD/Projekte/CCP/CDSG Projekte/EvaSchaefer/CDSTableCheck_20250731.rds")
-ADSTableCheck <- readRDS(file = "C:/Users/Basti/OneDrive/ARBEIT/IDMKD/Projekte/CCP/CDSG Projekte/EvaSchaefer/ADSTableCheck_20250731.rds")
+RefinementReport <- readRDS(file = "C:/Users/Basti/OneDrive/ARBEIT/IDMKD/Projekte/CCP/CDSG Projekte/EvaSchaefer/RefinementReport_20250731.rds")
+#SDSTableCheck <- readRDS(file = "C:/Users/Basti/OneDrive/ARBEIT/IDMKD/Projekte/CCP/CDSG Projekte/EvaSchaefer/SDSTableCheck_20250731.rds")
+RDSTableCheck <- readRDS(file = "C:/Users/Basti/OneDrive/ARBEIT/IDMKD/Projekte/CCP/CDSG Projekte/EvaSchaefer/RDSTableCheck_20250731.rds")
+EDSTableCheck <- readRDS(file = "C:/Users/Basti/OneDrive/ARBEIT/IDMKD/Projekte/CCP/CDSG Projekte/EvaSchaefer/EDSTableCheck_20250731.rds")
 
 
 
 
 StartFredaApp(TestData = TestData,
               RunAutonomously = FALSE)
-               # RDSTableCheckData = RDSTableCheck
-               # ADSTableCheckData = ADSTableCheck,
-               # CurationReportData = CurationReport)
+               # SDSTableCheckData = SDSTableCheck
+               # EDSTableCheckData = EDSTableCheck,
+               # RefinementReportData = RefinementReport)
 
 
 
@@ -46,7 +46,7 @@ CCPConnections <- ConnectToVirtualCCP(CCPTestData = TestData,
 
 Messages_ServerRequirements <- CheckServerRequirements(DataSources = CCPConnections)
 
-LoadRawDataSet(DataSources = CCPConnections)
+LoadSourceDataSet(DataSources = CCPConnections)
 
 WorkspaceInfo <- GetServerWorkspaceInfo(DataSources = CCPConnections)
 

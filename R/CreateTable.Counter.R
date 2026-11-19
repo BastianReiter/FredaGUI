@@ -17,7 +17,7 @@ CreateTable.Counter <- function(CounterData,
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 {
   # --- For Testing Purposes ---
-  #CounterData <- CurationReport$Counter
+  #CounterData <- RefinementReport$Counter
 
 #-------------------------------------------------------------------------------
 

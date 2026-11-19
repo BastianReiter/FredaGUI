@@ -5,9 +5,9 @@
 \title{Widget.DataSetCheck}
 \usage{
 Widget.DataSetCheck(
+  SDSCheckData = NULL,
   RDSCheckData = NULL,
-  CDSCheckData = NULL,
-  ADSCheckData = NULL,
+  EDSCheckData = NULL,
   DSConnections = NULL,
   EndProcessWhenClosingApp = TRUE,
   RunAutonomously = FALSE,

@@ -47,20 +47,20 @@ Mod.Report.Log.Server <- function(id)
                   #-------------------------------------------------------------
                   observe({ updateSelectInput(session = getDefaultReactiveDomain(),
                                               inputId = "ServerName",
-                                              choices = names(session$userData$CurationReport() %>% pluck("Log")),
-                                              selected = names(session$userData$CurationReport()%>% pluck("Log"))[1])
+                                              choices = names(session$userData$RefinementReport() %>% pluck("Log")),
+                                              selected = names(session$userData$RefinementReport()%>% pluck("Log"))[1])
                           }) %>%
-                      bindEvent(session$userData$CurationReport())
+                      bindEvent(session$userData$RefinementReport())
 
 
                   # Prepare Log data
                   #-------------------------------------------------------------
-                  LogData <- reactive({ req(session$userData$CurationReport())
+                  LogData <- reactive({ req(session$userData$RefinementReport())
                                         req(input$ServerName)
 
-                                        if (!is.null(session$userData$CurationReport()))
+                                        if (!is.null(session$userData$RefinementReport()))
                                         {
-                                            session$userData$CurationReport() %>%
+                                            session$userData$RefinementReport() %>%
                                                 pluck("Log", input$ServerName) %>%
                                                 filter(ProcessTopic != "COUNT")
                                         }

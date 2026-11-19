@@ -382,7 +382,7 @@ Mod.UnivariateExploration.Server <- function(id,
                                                               #                    xaxis = list(#side = "top",
                                                               #                                 title = "",
                                                               #                                 categoryorder = "array",
-                                                              #                                 categoryarray = c("Raw", "Harmonized", "Recoded", "Final")),
+                                                              #                                 categoryarray = c("Source", "Harmonized", "Recoded", "Final")),
                                                               #                    yaxis = list(title = "",
                                                               #                                 showticklabels = FALSE),
                                                               #                    barmode = "stack") %>%

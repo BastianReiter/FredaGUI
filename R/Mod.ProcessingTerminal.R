@@ -123,8 +123,8 @@ Mod.ProcessingTerminal.Server <- function(id)
                                 LoadingOn()
                                 on.exit(LoadingOff())
 
-                                # Trigger function LoadRawDataSet()
-                                Messages <- SafeDS(dsCCPhosClient::CCP.LoadRawDataSet(ServerSpecifications = session$userData$ServerSpecifications(),
+                                # Trigger function LoadSourceDataSet()
+                                Messages <- SafeDS(dsCCPhosClient::CCP.LoadSourceDataSet(ServerSpecifications = session$userData$ServerSpecifications(),
                                                                                       RunAssignmentChecks = TRUE,
                                                                                       DSConnections = session$userData$DSConnections()))
 
@@ -134,16 +134,16 @@ Mod.ProcessingTerminal.Server <- function(id)
                                 # Assign messages to reactive value
                                 ReturnMessages(Messages)
 
-                                # Trigger function ds.CheckDataSet() for RDS and save returned list
-                                RDSCheckData <- SafeDS(dsFredaClient::ds.GetDataSetCheck(DataSetName = "CCP.RawDataSet",
+                                # Trigger function ds.CheckDataSet() for SDS and save returned list
+                                SDSCheckData <- SafeDS(dsFredaClient::ds.GetDataSetCheck(DataSetName = "CCP.SourceDataSet",
                                                                                          Module = "CCP",
-                                                                                         Stage = "Raw",
+                                                                                         Stage = "Source",
                                                                                          DSConnections = session$userData$DSConnections()))
 
-                                if (inherits(RDSCheckData, "dsFail")) { ShowDSError(); return(NULL) }
+                                if (inherits(SDSCheckData, "dsFail")) { ShowDSError(); return(NULL) }
 
                                 # Assign to session$userData object
-                                session$userData$RDSCheckData(RDSCheckData)
+                                session$userData$SDSCheckData(SDSCheckData)
 
                                 # Trigger function GetServerWorkspaceInfo()...
                                 InfoData <- SafeDS(dsFredaClient::GetServerWorkspaceInfo(DSConnections = session$userData$DSConnections()))
@@ -160,39 +160,39 @@ Mod.ProcessingTerminal.Server <- function(id)
                   }
 
 
-                  if (id == "CurateData")
+                  if (id == "RefineData")
                   {
                       observe({ # Assign loading behavior
                                 LoadingOn()
                                 on.exit(LoadingOff())
 
-                                # Trigger function ds.CurateData() and save return
-                                Curation <- SafeDS(dsFredaClient::ds.CurateData(RawDataSetName = "CCP.RawDataSet",
+                                # Trigger function ds.RefineData() and save return
+                                Refinement <- SafeDS(dsFredaClient::ds.RefineData(SourceDataSetName = "CCP.SourceDataSet",
                                                                                 Module = "CCP",
-                                                                                OutputName = "CCP.CurationOutput",
-                                                                                UnpackCuratedDataSet = TRUE,
+                                                                                OutputName = "CCP.RefinementOutput",
+                                                                                UnpackRefinedDataSet = TRUE,
                                                                                 RunAssignmentChecks = FALSE,
                                                                                 DSConnections = session$userData$DSConnections()))
 
-                                if (inherits(Curation, "dsFail")) { ShowDSError(); return(NULL) }
+                                if (inherits(Refinement, "dsFail")) { ShowDSError(); return(NULL) }
 
                                 # Assign returned messages (concatenated lists) to reactive value ReturnMessages
-                                ReturnMessages(Curation$Messages)
+                                ReturnMessages(Refinement$Messages)
 
-                                # Trigger function ds.CheckDataSet() for CDS and save returned list
-                                CDSCheckData <- SafeDS(dsFredaClient::ds.GetDataSetCheck(DataSetName = "CCP.CuratedDataSet",
+                                # Trigger function ds.CheckDataSet() for RDS and save returned list
+                                RDSCheckData <- SafeDS(dsFredaClient::ds.GetDataSetCheck(DataSetName = "CCP.RefinedDataSet",
                                                                                          Module = "CCP",
-                                                                                         Stage = "Curated",
+                                                                                         Stage = "Refined",
                                                                                          DSConnections = session$userData$DSConnections()))
 
-                                if (inherits(CDSCheckData, "dsFail")) { ShowDSError(); return(NULL) }
+                                if (inherits(RDSCheckData, "dsFail")) { ShowDSError(); return(NULL) }
 
                                 # Assign to session$userData object
-                                session$userData$CDSCheckData(CDSCheckData)
+                                session$userData$RDSCheckData(RDSCheckData)
 
                                 # Update 'Checkpoints' data frame ...
                                 Checkpoints <- session$userData$Checkpoints() %>%
-                                                    left_join(Curation$Curation.Completion, by = join_by(ServerName))
+                                                    left_join(Refinement$Refinement.Completion, by = join_by(ServerName))
 
                                 # # ... and reassign it to session$userData object
                                 session$userData$Checkpoints(Checkpoints)
@@ -204,13 +204,13 @@ Mod.ProcessingTerminal.Server <- function(id)
                                 # ... and assign return (data.frame) to reactive value ServerWorkspaceInfo in session$userData
                                 session$userData$ServerWorkspaceInfo(InfoData)
 
-                                # Trigger function ds.GetCurationReport() and assign return to reactive value 'CurationReport' in session$userData
-                                CurationReport <- SafeDS(dsFredaClient::ds.GetCurationReport(Module = "CCP",
+                                # Trigger function ds.GetRefinementReport() and assign return to reactive value 'RefinementReport' in session$userData
+                                RefinementReport <- SafeDS(dsFredaClient::ds.GetRefinementReport(Module = "CCP",
                                                                                              DSConnections = session$userData$DSConnections()))
                                 # ... handle possible errors ...
-                                if (inherits(CurationReport, "dsFail")) { ShowDSError(); return(NULL) }
+                                if (inherits(RefinementReport, "dsFail")) { ShowDSError(); return(NULL) }
                                 # ... and assign return to reactive value in session$userData
-                                session$userData$CurationReport(CurationReport)
+                                session$userData$RefinementReport(RefinementReport)
 
                                 # Set reactive value Complete TRUE
                                 Complete(TRUE)
@@ -220,38 +220,38 @@ Mod.ProcessingTerminal.Server <- function(id)
                   }
 
 
-                  if (id == "AugmentData")
+                  if (id == "EnrichData")
                   {
                       observe({ # Assign loading behavior
                                 LoadingOn()
                                 on.exit(LoadingOff())
 
-                                # Trigger function ds.AugmentData() and save return
-                                Augmentation <- SafeDS(dsCCPhosClient::ds.CCP.AugmentData(CuratedDataSetName = "CCP.CuratedDataSet",
-                                                                                          OutputName = "CCP.AugmentationOutput",
-                                                                                          UnpackAugmentedDataSet = TRUE,
+                                # Trigger function ds.EnrichData() and save return
+                                Enrichment <- SafeDS(dsCCPhosClient::ds.CCP.EnrichData(RefinedDataSetName = "CCP.RefinedDataSet",
+                                                                                          OutputName = "CCP.EnrichmentOutput",
+                                                                                          UnpackEnrichedDataSet = TRUE,
                                                                                           RunAssignmentChecks = FALSE,
                                                                                           DSConnections = session$userData$DSConnections()))
 
-                                if (inherits(Augmentation, "dsFail")) { ShowDSError(); return(NULL) }
+                                if (inherits(Enrichment, "dsFail")) { ShowDSError(); return(NULL) }
 
                                 # Assign returned messages (concatenated lists) to reactive value ReturnMessages
-                                ReturnMessages(Augmentation$Messages)
+                                ReturnMessages(Enrichment$Messages)
 
-                                # Trigger function ds.CheckDataSet() for ADS and save returned list
-                                ADSCheckData <- SafeDS(dsFredaClient::ds.GetDataSetCheck(DataSetName = "CCP.AugmentedDataSet",
+                                # Trigger function ds.CheckDataSet() for EDS and save returned list
+                                EDSCheckData <- SafeDS(dsFredaClient::ds.GetDataSetCheck(DataSetName = "CCP.EnrichedDataSet",
                                                                                          Module = "CCP",
-                                                                                         Stage = "Augmented",
+                                                                                         Stage = "Enriched",
                                                                                          DSConnections = session$userData$DSConnections()))
 
-                                if (inherits(ADSCheckData, "dsFail")) { ShowDSError(); return(NULL) }
+                                if (inherits(EDSCheckData, "dsFail")) { ShowDSError(); return(NULL) }
 
                                 # Assign to session$userData object
-                                session$userData$ADSCheckData(ADSCheckData)
+                                session$userData$EDSCheckData(EDSCheckData)
 
                                 # Update 'Checkpoints' data frame ...
                                 Checkpoints <- session$userData$Checkpoints() %>%
-                                                    left_join(Augmentation$AugmentationCompletionCheck, by = join_by(ServerName))
+                                                    left_join(Enrichment$EnrichmentCompletionCheck, by = join_by(ServerName))
 
                                 # # ... and reassign it to session$userData object
                                 session$userData$Checkpoints(Checkpoints)

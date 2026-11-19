@@ -69,7 +69,7 @@ Mod.DataSetCheck.Server <- function(id,
                                                                             select(-CheckSummary)
 
                                                     # For HTML table, create vector of column labels with shortened table names to save some horizontal space ()
-                                                    ColumnLabels <- str_remove(colnames(TableStatusData), "^.*\\.(?:RDS|CDS|ADS)\\.") %>% set_names(colnames(TableStatusData))
+                                                    ColumnLabels <- str_remove(colnames(TableStatusData), "^.*\\.(?:SDS|RDS|EDS)\\.") %>% set_names(colnames(TableStatusData))
                                                     ColumnLabels[1] <- "Server"
 
                                                     if (!is.null(TableStatusData))

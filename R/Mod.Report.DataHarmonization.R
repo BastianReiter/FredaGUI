@@ -107,28 +107,28 @@ Mod.Report.DataHarmonization.Server <- function(id)
                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                   observe({ updateSelectInput(session = getDefaultReactiveDomain(),
                                               inputId = "ServerName",
-                                              choices = names(session$userData$CurationReport() %>% pluck("DataHarmonization", "Monitors", "TableLevel")),
-                                              selected = names(session$userData$CurationReport() %>% pluck("DataHarmonization", "Monitors", "TableLevel"))[1])
+                                              choices = names(session$userData$RefinementReport() %>% pluck("DataHarmonization", "Monitors", "TableLevel")),
+                                              selected = names(session$userData$RefinementReport() %>% pluck("DataHarmonization", "Monitors", "TableLevel"))[1])
 
                             updateSelectInput(session = getDefaultReactiveDomain(),
                                               inputId = "MonitorTableName",
-                                              choices = names(session$userData$CurationReport() %>% pluck("DataHarmonization", "Monitors", "FeatureLevel", 1)),
-                                              selected = names(session$userData$CurationReport() %>% pluck("DataHarmonization", "Monitors", "FeatureLevel", 1))[1])
+                                              choices = names(session$userData$RefinementReport() %>% pluck("DataHarmonization", "Monitors", "FeatureLevel", 1)),
+                                              selected = names(session$userData$RefinementReport() %>% pluck("DataHarmonization", "Monitors", "FeatureLevel", 1))[1])
                           }) %>%
-                      bindEvent(session$userData$CurationReport())
+                      bindEvent(session$userData$RefinementReport())
 
 
 
-                  #output$TestBox <- renderText({ paste0(names(session$userData$CurationReport()), collapse = ", ")  })
+                  #output$TestBox <- renderText({ paste0(names(session$userData$RefinementReport()), collapse = ", ")  })
 
 
                   # Reactive expression: Data for eligibility overview
                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                  Data.EligibilityOverview <- reactive({ req(session$userData$CurationReport())
+                  Data.EligibilityOverview <- reactive({ req(session$userData$RefinementReport())
                                                          req(input$ServerName)
                                                          req(input$MonitorTableName)
 
-                                                         if (!is.null(session$userData$CurationReport()))
+                                                         if (!is.null(session$userData$RefinementReport()))
                                                          {
                                                              # - Restructure eligibility overview table to meet requirements of plot function
                                                              # - Create separate data frames for each 'Feature' value
@@ -136,11 +136,11 @@ Mod.Report.DataHarmonization.Server <- function(id)
                                                              #   - 'Feature': contains names of features
                                                              #   - 'data': plot data for feature-specific plot
                                                              #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                                                             session$userData$CurationReport() %>%
+                                                             session$userData$RefinementReport() %>%
                                                                   pluck("DataHarmonization", "Monitors", "FeatureLevel", input$ServerName, input$MonitorTableName) %>%
                                                                   list_rbind(names_to = "Feature") %>%
                                                                   select(-starts_with("Proportion")) %>%
-                                                                  pivot_longer(cols = c(Count.Raw, Count.Remediated, Count.Recoded, Count.Final),
+                                                                  pivot_longer(cols = c(Count.Source, Count.Remediated, Count.Recoded, Count.Final),
                                                                                names_to = "Stage",
                                                                                values_to = "Count") %>%
                                                                   pivot_wider(names_from = "Eligibility",
@@ -201,7 +201,7 @@ Mod.Report.DataHarmonization.Server <- function(id)
                                                                                                      xaxis = list(#side = "top",
                                                                                                                   title = "",
                                                                                                                   categoryorder = "array",
-                                                                                                                  categoryarray = c("Count.Raw", "Count.Remediated", "Count.Recoded", "Count.Final")),
+                                                                                                                  categoryarray = c("Count.Source", "Count.Remediated", "Count.Recoded", "Count.Final")),
                                                                                                      yaxis = list(title = "",
                                                                                                                   showticklabels = FALSE),
                                                                                                      barmode = "stack") %>%
@@ -236,19 +236,19 @@ Mod.Report.DataHarmonization.Server <- function(id)
                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                   # Reactive expression: Data for transformation track table
                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-                  Data.TransformationTracks <- reactive({ req(session$userData$CurationReport())
+                  Data.TransformationTracks <- reactive({ req(session$userData$RefinementReport())
                                                           req(input$ServerName)
                                                           req(input$MonitorTableName)
 
-                                                          if (!is.null(session$userData$CurationReport()))
+                                                          if (!is.null(session$userData$RefinementReport()))
                                                           {
-                                                              session$userData$CurationReport() %>%
+                                                              session$userData$RefinementReport() %>%
                                                                   pluck("DataHarmonization", "Monitors", "ValueLevel", input$ServerName, input$MonitorTableName) %>%
                                                                   { if (input$ShowNonOccurringValues == FALSE) { filter(., IsOccurring == TRUE) } else {.} } %>%       # Filter for occurring values only, if option checked in UI
-                                                                  mutate(CellCSSClass.Value.Raw = case_when(IsOccurring == FALSE & IsEligible.Raw == TRUE ~ "CellCSSClass_Info",
-                                                                                                            IsOccurring == TRUE & IsEligible.Raw == TRUE ~ "CellCSSClass_Success",
-                                                                                                            !is.na(Value.Raw) & IsEligible.Raw == FALSE ~ "CellCSSClass_Failure",
-                                                                                                            is.na(Value.Raw) ~ "CellCSSClass_Grey",
+                                                                  mutate(CellCSSClass.Value.Source = case_when(IsOccurring == FALSE & IsEligible.Source == TRUE ~ "CellCSSClass_Info",
+                                                                                                            IsOccurring == TRUE & IsEligible.Source == TRUE ~ "CellCSSClass_Success",
+                                                                                                            !is.na(Value.Source) & IsEligible.Source == FALSE ~ "CellCSSClass_Failure",
+                                                                                                            is.na(Value.Source) ~ "CellCSSClass_Grey",
                                                                                                             TRUE ~ "None"),
                                                                          CellCSSClass.Value.Remediated = case_when(IsOccurring == TRUE & IsEligible.Remediated == TRUE ~ "CellCSSClass_Success",
                                                                                                                    !is.na(Value.Remediated) & IsEligible.Remediated == FALSE ~ "CellCSSClass_Failure",
@@ -276,11 +276,11 @@ Mod.Report.DataHarmonization.Server <- function(id)
                                                               # Modify data for rendering purposes
                                                               TableData <- Data.TransformationTracks() %>%
                                                                                 select(Feature,
-                                                                                       Value.Raw,
+                                                                                       Value.Source,
                                                                                        Value.Remediated,
                                                                                        Value.Recoded,
                                                                                        Value.Final,
-                                                                                       Count.Raw,
+                                                                                       Count.Source,
                                                                                        starts_with("CellCSSClass"))
 
                                                               if (!is.null(TableData))
@@ -288,11 +288,11 @@ Mod.Report.DataHarmonization.Server <- function(id)
                                                                   DataFrameToHtmlTable(DataFrame = TableData,
                                                                                        CategoryColumn = "Feature",
                                                                                        ColContentHorizontalAlign = "center",
-                                                                                       ColumnLabels = c(Value.Raw = "Raw",
+                                                                                       ColumnLabels = c(Value.Source = "Source",
                                                                                                         Value.Remediated = "Remediated",
                                                                                                         Value.Recoded = "Recoded",
                                                                                                         Value.Final = "Final",
-                                                                                                        Count.Raw = "Count"),
+                                                                                                        Count.Source = "Count"),
                                                                                        SemanticTableCSSClass = "ui small compact celled structured table")
                                                               } })
                })
