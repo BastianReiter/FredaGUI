@@ -7,6 +7,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @noRd
+#' @export
 #-------------------------------------------------------------------------------
 Mod.DataSetCheck.UI <- function(id)
 #-------------------------------------------------------------------------------
@@ -44,6 +45,7 @@ Mod.DataSetCheck.UI <- function(id)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @noRd
+#' @export
 #-------------------------------------------------------------------------------
 Mod.DataSetCheck.Server <- function(id,
                                     DataSetCheckData)   # reactive
@@ -70,7 +72,7 @@ Mod.DataSetCheck.Server <- function(id,
 
                                                     # For HTML table, create vector of column labels with shortened table names to save some horizontal space ()
                                                     ColumnLabels <- str_remove(colnames(TableStatusData), "^.*\\.(?:SDS|RDS|EDS)\\.") %>% set_names(colnames(TableStatusData))
-                                                    ColumnLabels[1] <- "Server"
+                                                    ColumnLabels[1] <- "Site"
 
                                                     if (!is.null(TableStatusData))
                                                     {
@@ -121,7 +123,7 @@ Mod.DataSetCheck.Server <- function(id,
                                                     {
                                                         DataFrameToHtmlTable(DataFrame = TableData$TableDetails,
                                                                              ColContentHorizontalAlign = "center",
-                                                                             ColumnLabels = c(ServerName = "Server"),
+                                                                             ColumnLabels = c(SiteName = "Site"),
                                                                              HeaderColspans = TableData$HeaderColspans,
                                                                              SemanticTableCSSClass = "ui small compact inverted scrollable structured table",
                                                                              TurnLogicalsIntoIcons = TRUE,

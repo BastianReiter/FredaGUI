@@ -189,33 +189,3 @@ Reactable.ConditionalCellStyle <- function(Value,
 }
 
 #===============================================================================
-
-
-#===============================================================================
-#' SafeDS
-#' @noRd
-#-------------------------------------------------------------------------------
-SafeDS <- function(Expression)
-{
-  tryCatch(expr = Expression,
-           error = function(e)
-                   {
-                      structure(list(error = TRUE,
-                                     msg = conditionMessage(e)),
-                                class = "dsFail")
-                   })
-}
-#===============================================================================
-
-
-#===============================================================================
-#' ShowDSError
-#' @noRd
-#-------------------------------------------------------------------------------
-ShowDSError <- function()
-{
-  showNotification(ui = "Server temporarily unavailable (Bad Gateway). Please repeat the action.",
-                   duration = NULL,
-                   type = "error")
-}
-#===============================================================================

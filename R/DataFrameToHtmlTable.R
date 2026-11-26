@@ -55,11 +55,11 @@ DataFrameToHtmlTable <- function(DataFrame,
   # ColContentHorizontalAlign <- "center"
   # ColumnCSSClass <- NULL
   # ColumnIcons <- NULL
-  # ColumnLabels <- c(Value.Raw = "Raw",
+  # ColumnLabels <- c(Value.Source = "Source",
   #                   Value.Remediated = "Remediated",
   #                   Value.Recoded = "Recoded",
   #                   Value.Final = "Final",
-  #                   Count.Raw = "Count")
+  #                   Count.Source = "Count")
   # ColumnLabelsLineBreak <- FALSE
   # ColumnMaxWidth <- 1000
   # HeaderColspans <- NULL

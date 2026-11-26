@@ -7,6 +7,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @noRd
+#' @export
 #-------------------------------------------------------------------------------
 Mod.Report.Counter.UI <- function(id)
 #-------------------------------------------------------------------------------
@@ -34,6 +35,7 @@ Mod.Report.Counter.UI <- function(id)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @noRd
+#' @export
 #-------------------------------------------------------------------------------
 Mod.Report.Counter.Server <- function(id)
 #-------------------------------------------------------------------------------
@@ -45,7 +47,7 @@ Mod.Report.Counter.Server <- function(id)
 
                   WaiterScreen <- CreateWaiterScreen(ID = ns("CounterTable"))
 
-                  CounterData <- isolate(session$userData$EnrichmentReport()$Counter)
+                  CounterData <- isolate(session$userData$RefinementReport()$Counter)
 
                   # Toggle button functionality
                   observe({ if (input$Tgl.ShowAllStages == FALSE)
