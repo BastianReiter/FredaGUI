@@ -7,8 +7,6 @@
 Widget.RefinementReport(
   Module = "CCP",
   RefinementReport = NULL,
-  DSConnections = NULL,
-  DS.async = FALSE,
   EndProcessWhenClosingApp = TRUE,
   RunAutonomously = FALSE,
   RunInViewer = FALSE,
@@ -17,10 +15,6 @@ Widget.RefinementReport(
 }
 \arguments{
 \item{RefinementReport}{\code{list}}
-
-\item{DSConnections}{\code{list} of \code{DSConnection} objects}
-
-\item{DS.async}{\code{logical} - Value of argument 'async' in \code{DSI::datashield.assign()} / \code{DSI::datashield.aggregate()} - Default: \code{FALSE}}
 
 \item{EndProcessWhenClosingApp}{\code{logical} indicating whether the background process that runs the Shiny app (if it runs autonomously) should end when the app is closed (default) or should be preserved, in which case the process should be ended manually.}
 

@@ -4,8 +4,6 @@
 #' Launch a Shiny app that serves as GUI for Refinement Report data.
 #'
 #' @param RefinementReport \code{list}
-#' @param DSConnections \code{list} of \code{DSConnection} objects
-#' @param DS.async \code{logical} - Value of argument 'async' in \code{DSI::datashield.assign()} / \code{DSI::datashield.aggregate()} - Default: \code{FALSE}
 #' @param RunAutonomously \code{logical} indicating whether the Shiny app is hosted by a background process (default) available as a URL via web browsers or - if set to \code{FALSE} - is hosted by the current running R session.
 #' @param RunInViewer \code{logical} indicating whether the Shiny app should be run in the RStudio Viewer pane (Default: \code{FALSE})
 #' @param EndProcessWhenClosingApp \code{logical} indicating whether the background process that runs the Shiny app (if it runs autonomously) should end when the app is closed (default) or should be preserved, in which case the process should be ended manually.
@@ -19,8 +17,6 @@
 Widget.RefinementReport <- function(#--- Arguments for app itself ---
                                     Module = "CCP",
                                     RefinementReport = NULL,
-                                    DSConnections = NULL,
-                                    DS.async = FALSE,
                                     #--- Arguments for app wrapper ---
                                     EndProcessWhenClosingApp = TRUE,
                                     RunAutonomously = FALSE,
@@ -31,33 +27,17 @@ Widget.RefinementReport <- function(#--- Arguments for app itself ---
   # --- For Testing Purposes ---
   # Module <- "CCP"
   # RefinementReport <- RefinementReport
-  # DSConnections <- CCPConnections
-  # DS.async <- FALSE
   # EndProcessWhenClosingApp <- TRUE
   # RunAutonomously <- FALSE
   # RunInViewer <- FALSE
 
   # --- Argument Validation ---
   assert_that(is.string(Module),
-              is.flag(DS.async),
               is.flag(EndProcessWhenClosingApp),
               is.flag(RunAutonomously),
               is.flag(RunInViewer))
 
   if (!is.null(RefinementReport)) assert_that(is.list(RefinementReport))
-
-#-------------------------------------------------------------------------------
-
-  # If no RefinementReport data is passed, get it programmatically
-  if (is.null(RefinementReport))
-  {
-      # Check validity of 'DSConnections' or find them programmatically if none are passed
-      DSConnections <- CheckDSConnections(DSConnections)
-
-      RefinementReport <- dsFredaClient::ds.GetRefinementReport(Module = Module,
-                                                                DSConnections = DSConnections,
-                                                                DS.async = DS.async)
-  }
 
 #-------------------------------------------------------------------------------
 
@@ -104,7 +84,6 @@ Widget.RefinementReport <- function(#--- Arguments for app itself ---
 
           # Initialize global objects
           session$userData$RefinementReport <- reactiveVal(NULL)
-          session$userData$DSConnections <- reactiveVal(NULL)
 
           # output$TestMonitor <- renderText({  req(session$userData$RefinementReport())
           #                                     paste0(names(session$userData$RefinementReport()), collapse = ", ")
@@ -112,8 +91,7 @@ Widget.RefinementReport <- function(#--- Arguments for app itself ---
 
           # 'Mod.Initialize' assigns content to session$userData objects at app start
           Mod.Initialize(id = "Initialize",
-                         RefinementReport = RefinementReport,
-                         DSConnections = DSConnections)
+                         RefinementReport = RefinementReport)
 
           #---------------------------------------------------------------------
 

@@ -7,6 +7,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @noRd
+#' @export
 #-------------------------------------------------------------------------------
 Mod.Report.DataHarmonization.UI <- function(id)
 #-------------------------------------------------------------------------------
@@ -19,8 +20,8 @@ Mod.Report.DataHarmonization.UI <- function(id)
                padding: 1em;",
 
 
-      div(selectInput(inputId = ns("ServerName"),
-                      label = "Select Server",
+      div(selectInput(inputId = ns("SiteName"),
+                      label = "Select Site",
                       choices = ""),
 
           selectInput(inputId = ns("MonitorTableName"),
@@ -72,6 +73,7 @@ Mod.Report.DataHarmonization.UI <- function(id)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @noRd
+#' @export
 #-------------------------------------------------------------------------------
 Mod.Report.DataHarmonization.Server <- function(id)
 #-------------------------------------------------------------------------------
@@ -87,7 +89,7 @@ Mod.Report.DataHarmonization.Server <- function(id)
 
                   LoadingOn <- function()
                   {
-                      shinyjs::disable("ServerName")
+                      shinyjs::disable("SiteName")
                       shinyjs::disable("MonitorTableName")
                       shinyjs::disable("ShowNonOccurringValues")
                       WaiterScreen$show()
@@ -95,7 +97,7 @@ Mod.Report.DataHarmonization.Server <- function(id)
 
                   LoadingOff <- function()
                   {
-                      shinyjs::enable("ServerName")
+                      shinyjs::enable("SiteName")
                       shinyjs::enable("MonitorTableName")
                       shinyjs::enable("ShowNonOccurringValues")
                       WaiterScreen$hide()
@@ -106,7 +108,7 @@ Mod.Report.DataHarmonization.Server <- function(id)
                   # Update input elements when data changes
                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                   observe({ updateSelectInput(session = getDefaultReactiveDomain(),
-                                              inputId = "ServerName",
+                                              inputId = "SiteName",
                                               choices = names(session$userData$RefinementReport() %>% pluck("DataHarmonization", "Monitors", "TableLevel")),
                                               selected = names(session$userData$RefinementReport() %>% pluck("DataHarmonization", "Monitors", "TableLevel"))[1])
 
@@ -125,7 +127,7 @@ Mod.Report.DataHarmonization.Server <- function(id)
                   # Reactive expression: Data for eligibility overview
                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                   Data.EligibilityOverview <- reactive({ req(session$userData$RefinementReport())
-                                                         req(input$ServerName)
+                                                         req(input$SiteName)
                                                          req(input$MonitorTableName)
 
                                                          if (!is.null(session$userData$RefinementReport()))
@@ -137,7 +139,7 @@ Mod.Report.DataHarmonization.Server <- function(id)
                                                              #   - 'data': plot data for feature-specific plot
                                                              #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                                                              session$userData$RefinementReport() %>%
-                                                                  pluck("DataHarmonization", "Monitors", "FeatureLevel", input$ServerName, input$MonitorTableName) %>%
+                                                                  pluck("DataHarmonization", "Monitors", "FeatureLevel", input$SiteName, input$MonitorTableName) %>%
                                                                   list_rbind(names_to = "Feature") %>%
                                                                   select(-starts_with("Proportion")) %>%
                                                                   pivot_longer(cols = c(Count.Source, Count.Remediated, Count.Recoded, Count.Final),
@@ -237,13 +239,13 @@ Mod.Report.DataHarmonization.Server <- function(id)
                   # Reactive expression: Data for transformation track table
                   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                   Data.TransformationTracks <- reactive({ req(session$userData$RefinementReport())
-                                                          req(input$ServerName)
+                                                          req(input$SiteName)
                                                           req(input$MonitorTableName)
 
                                                           if (!is.null(session$userData$RefinementReport()))
                                                           {
                                                               session$userData$RefinementReport() %>%
-                                                                  pluck("DataHarmonization", "Monitors", "ValueLevel", input$ServerName, input$MonitorTableName) %>%
+                                                                  pluck("DataHarmonization", "Monitors", "ValueLevel", input$SiteName, input$MonitorTableName) %>%
                                                                   { if (input$ShowNonOccurringValues == FALSE) { filter(., IsOccurring == TRUE) } else {.} } %>%       # Filter for occurring values only, if option checked in UI
                                                                   mutate(CellCSSClass.Value.Source = case_when(IsOccurring == FALSE & IsEligible.Source == TRUE ~ "CellCSSClass_Info",
                                                                                                             IsOccurring == TRUE & IsEligible.Source == TRUE ~ "CellCSSClass_Success",

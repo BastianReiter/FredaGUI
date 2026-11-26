@@ -8,7 +8,6 @@ Widget.DataSetCheck(
   SDSCheckData = NULL,
   RDSCheckData = NULL,
   EDSCheckData = NULL,
-  DSConnections = NULL,
   EndProcessWhenClosingApp = TRUE,
   RunAutonomously = FALSE,
   RunInViewer = FALSE,
@@ -16,7 +15,11 @@ Widget.DataSetCheck(
 )
 }
 \arguments{
-\item{DSConnections}{\code{list} of \code{DSConnection} objects}
+\item{SDSCheckData}{\code{list}}
+
+\item{RDSCheckData}{\code{list}}
+
+\item{EDSCheckData}{\code{list}}
 
 \item{EndProcessWhenClosingApp}{\code{logical} indicating whether the background process that runs the Shiny app (if it runs autonomously) should end when the app is closed (default) or should be preserved, in which case the process should be ended manually.}
 
@@ -25,7 +28,7 @@ Widget.DataSetCheck(
 \item{RunInViewer}{\code{logical} indicating whether the Shiny app should be run in the RStudio Viewer pane (Default: \code{FALSE})}
 }
 \value{
-When 'RunAutonomously' is set to \code{TRUE} this function can return the background process to make it assignable to an R symbol. Otherwise it will run/return a \code{shinyApp} object.
+If 'RunAutonomously' is set to \code{TRUE} this function can return the background process to make it assignable to an R symbol. Otherwise it will run/return a \code{shinyApp} object.
 }
 \description{
 Launch a Shiny app that facilitates interpretation of data set check reports

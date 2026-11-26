@@ -35,7 +35,7 @@ CreateTable.Counter <- function(CounterData,
           mutate(Final.CountRecords.Proportion = 1 + Final.CountRecords.Change.Proportion,
                  Final.CountRootSubjects.Proportion = 1 + Final.CountRootSubjects.Change.Proportion,
                  Final.CountSeedSubjects.Proportion = 1 + Final.CountSeedSubjects.Change.Proportion) %>%
-          select(any_of(c("Server",
+          select(any_of(c("Site",
                           "Table")),
                  starts_with("Initial"),
                  starts_with("PrimaryTableCleaning") & contains("Change"),
@@ -63,16 +63,16 @@ CreateTable.Counter <- function(CounterData,
                               pluck("TableLevel") %>%
                               list_rbind(names_to = "Table") %>%
                               filter(Table != ".DataSetRoot") %>%
-                              arrange(Server, Table) %>%
+                              arrange(Site, Table) %>%
                               PrepareReportData()
 
   ReportData.TableLevel.ByTable <- ReportData.TableLevel %>%
                                         split(.$Table) %>%
                                         map(\(X) X %>% select(-Table))
 
-  ReportData.TableLevel.ByServer <- ReportData.TableLevel %>%
-                                        relocate(Server, .after = last_col()) %>%
-                                        split(.$Server)
+  ReportData.TableLevel.BySite <- ReportData.TableLevel %>%
+                                        relocate(Site, .after = last_col()) %>%
+                                        split(.$Site)
 
   ReportData.Details <- CounterData %>%
                             pluck("Details")
@@ -142,9 +142,9 @@ CreateTable.Counter <- function(CounterData,
   }
 
 
-  RowStyle.AllServers <- function(index)
+  RowStyle.AllSites <- function(index)
   {
-      if (ReportData.DataSetLevel$Server[index] == "All")
+      if (ReportData.DataSetLevel$Site[index] == "All")
       {
           list(fontWeight = "800",
                borderTop = "2px solid #595959",
@@ -334,23 +334,23 @@ CreateTable.Counter <- function(CounterData,
                                 defaultColDef = colDef(align = "center", vAlign = "center"),
                                 borderless = TRUE,
                                 columnGroups = ColumnGroups,
-                                rowStyle = RowStyle.AllServers,
+                                rowStyle = RowStyle.AllSites,
                                 theme = GetTableTheme(),
                                 onClick = "expand",
                                 columns = c(GetColumnDefinitions(ReportData = ReportData.DataSetLevel, Level = "DataSetLevel", ShowAllStages = ShowAllStages),
-                                            list(Server = colDef(name = "Server",
+                                            list(Site = colDef(name = "Site",
                                                                  headerStyle = list(background = dsFredaClient::FredaColors$MediumGrey),
                                                                  width = 200,
                                                                  style = list(background = dsFredaClient::FredaColors$MediumGrey),
                                                                  align = "left",
                                                                  details = function(index.DataSetLevel)
                                                                            {
-                                                                              SelectedServer <- ReportData.DataSetLevel$Server[index.DataSetLevel]
+                                                                              SelectedSite <- ReportData.DataSetLevel$Site[index.DataSetLevel]
 
-                                                                              ReportData.TableLevel.SelectedServer <- ReportData.TableLevel.ByServer %>% pluck(SelectedServer)
+                                                                              ReportData.TableLevel.SelectedSite <- ReportData.TableLevel.BySite %>% pluck(SelectedSite)
 
                                                                               # --- Table-Level Summary table ---
-                                                                              reactable(data = ReportData.TableLevel.SelectedServer,
+                                                                              reactable(data = ReportData.TableLevel.SelectedSite,
                                                                                         pagination = FALSE,
                                                                                         defaultColDef = colDef(align = "center", vAlign = "center"),
                                                                                         borderless = TRUE,
@@ -358,22 +358,22 @@ CreateTable.Counter <- function(CounterData,
                                                                                                               Mod.HeaderStyle = list(display = "none"),
                                                                                                               Mod.RowStyle = list(height = "30px")),
                                                                                         onClick = "expand",
-                                                                                        columns = c(GetColumnDefinitions(ReportData = ReportData.TableLevel.SelectedServer, Level = "TableLevel", ShowAllStages = ShowAllStages),
-                                                                                                    list(Server = colDef(show = FALSE),
+                                                                                        columns = c(GetColumnDefinitions(ReportData = ReportData.TableLevel.SelectedSite, Level = "TableLevel", ShowAllStages = ShowAllStages),
+                                                                                                    list(Site = colDef(show = FALSE),
                                                                                                          Table = colDef(width = 190,
                                                                                                                         style = list(marginLeft = 10, background = unname(ColorToRGBCSS(dsFredaClient::FredaColors$MediumGrey, Alpha = 0.7))),
                                                                                                                         align = "left",
                                                                                                                         details = function(index.TableLevel)
                                                                                                                                   {
-                                                                                                                                    SelectedTable <- ReportData.TableLevel.SelectedServer$Table[index.TableLevel]
+                                                                                                                                    SelectedTable <- ReportData.TableLevel.SelectedSite$Table[index.TableLevel]
 
-                                                                                                                                    # --- For cumulated table-level summaries: On expand show table-specific summaries of different servers ---
-                                                                                                                                    if (SelectedServer == "All")
+                                                                                                                                    # --- For cumulated table-level summaries: On expand show table-specific summaries of different Sites ---
+                                                                                                                                    if (SelectedSite == "All")
                                                                                                                                     {
                                                                                                                                         ReportData.TableLevel.SelectedTable <- ReportData.TableLevel.ByTable %>% pluck(SelectedTable)
 
                                                                                                                                         if (is.null(ReportData.TableLevel.SelectedTable))
-                                                                                                                                        { return(NULL) } else { ReportData.TableLevel.SelectedTable <- ReportData.TableLevel.SelectedTable %>% filter(Server != "All") }
+                                                                                                                                        { return(NULL) } else { ReportData.TableLevel.SelectedTable <- ReportData.TableLevel.SelectedTable %>% filter(Site != "All") }
 
                                                                                                                                         return(reactable(data = ReportData.TableLevel.SelectedTable,
                                                                                                                                                          pagination = FALSE,
@@ -383,30 +383,30 @@ CreateTable.Counter <- function(CounterData,
                                                                                                                                                                                Mod.HeaderStyle = list(display = "none"),
                                                                                                                                                                                Mod.RowStyle = list(height = "30px")),
                                                                                                                                                          columns = c(GetColumnDefinitions(ReportData = ReportData.TableLevel.SelectedTable, Level = "SubtableLevel", ShowAllStages = ShowAllStages),
-                                                                                                                                                                     list(Server = colDef(width = 180,
+                                                                                                                                                                     list(Site = colDef(width = 180,
                                                                                                                                                                                           style = list(marginLeft = 20, background = unname(ColorToRGBCSS(dsFredaClient::FredaColors$MediumGrey, Alpha = 0.4))),
                                                                                                                                                                                           align = "left",
-                                                                                                                                                                                          details = function(index.TableLevel.Server)
+                                                                                                                                                                                          details = function(index.TableLevel.Site)
                                                                                                                                                                                                     {
-                                                                                                                                                                                                        SelectedServerInAll <- ReportData.TableLevel.SelectedTable$Server[index.TableLevel.Server]
+                                                                                                                                                                                                        SelectedSiteInAll <- ReportData.TableLevel.SelectedTable$Site[index.TableLevel.Site]
 
-                                                                                                                                                                                                        ReportData.Details.SelectedTable.SelectedServer <- ReportData.Details %>% pluck(SelectedServerInAll, SelectedTable)
+                                                                                                                                                                                                        ReportData.Details.SelectedTable.SelectedSite <- ReportData.Details %>% pluck(SelectedSiteInAll, SelectedTable)
 
-                                                                                                                                                                                                        if (is.null(ReportData.Details.SelectedTable.SelectedServer))
-                                                                                                                                                                                                        { return(NULL) } else { ReportData.Details.SelectedTable.SelectedServer <- ReportData.Details.SelectedTable.SelectedServer %>% mutate(SpaceColumn.End = NA) }
+                                                                                                                                                                                                        if (is.null(ReportData.Details.SelectedTable.SelectedSite))
+                                                                                                                                                                                                        { return(NULL) } else { ReportData.Details.SelectedTable.SelectedSite <- ReportData.Details.SelectedTable.SelectedSite %>% mutate(SpaceColumn.End = NA) }
 
-                                                                                                                                                                                                        return(GetDetailsTable(DetailsData = ReportData.Details.SelectedTable.SelectedServer))
+                                                                                                                                                                                                        return(GetDetailsTable(DetailsData = ReportData.Details.SelectedTable.SelectedSite))
                                                                                                                                                                                                     })))))
 
-                                                                                                                                    # --- For server-specific table-level summaries: On expand show Counter details for selected Server and selected Table ---
+                                                                                                                                    # --- For Site-specific table-level summaries: On expand show Counter details for selected Site and selected Table ---
                                                                                                                                     } else {
 
-                                                                                                                                        ReportData.Details.SelectedServer.SelectedTable <- ReportData.Details %>% pluck(SelectedServer, SelectedTable)
+                                                                                                                                        ReportData.Details.SelectedSite.SelectedTable <- ReportData.Details %>% pluck(SelectedSite, SelectedTable)
 
-                                                                                                                                        if (is.null(ReportData.Details.SelectedServer.SelectedTable))
-                                                                                                                                        { return(NULL) } else { ReportData.Details.SelectedServer.SelectedTable <- ReportData.Details.SelectedServer.SelectedTable %>% mutate(SpaceColumn.End = NA) }
+                                                                                                                                        if (is.null(ReportData.Details.SelectedSite.SelectedTable))
+                                                                                                                                        { return(NULL) } else { ReportData.Details.SelectedSite.SelectedTable <- ReportData.Details.SelectedSite.SelectedTable %>% mutate(SpaceColumn.End = NA) }
 
-                                                                                                                                        return(GetDetailsTable(DetailsData = ReportData.Details.SelectedServer.SelectedTable))
+                                                                                                                                        return(GetDetailsTable(DetailsData = ReportData.Details.SelectedSite.SelectedTable))
                                                                                                                                     }
 
                                                                                                                                   }))))

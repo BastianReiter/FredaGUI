@@ -7,6 +7,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @noRd
+#' @export
 #-------------------------------------------------------------------------------
 Mod.Report.Log.UI <- function(id)
 #-------------------------------------------------------------------------------
@@ -18,8 +19,8 @@ Mod.Report.Log.UI <- function(id)
                overflow: auto;
                min-height: 10em;",
 
-      selectInput(inputId = ns("ServerName"),
-                  label = "Select Server",
+      selectInput(inputId = ns("SiteName"),
+                  label = "Select Site",
                   choices = ""),
 
       h4(class = "ui dividing header"),
@@ -34,6 +35,7 @@ Mod.Report.Log.UI <- function(id)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @noRd
+#' @export
 #-------------------------------------------------------------------------------
 Mod.Report.Log.Server <- function(id)
 #-------------------------------------------------------------------------------
@@ -46,7 +48,7 @@ Mod.Report.Log.Server <- function(id)
                   # Update selection input choices
                   #-------------------------------------------------------------
                   observe({ updateSelectInput(session = getDefaultReactiveDomain(),
-                                              inputId = "ServerName",
+                                              inputId = "SiteName",
                                               choices = names(session$userData$RefinementReport() %>% pluck("Log")),
                                               selected = names(session$userData$RefinementReport()%>% pluck("Log"))[1])
                           }) %>%
@@ -56,12 +58,12 @@ Mod.Report.Log.Server <- function(id)
                   # Prepare Log data
                   #-------------------------------------------------------------
                   LogData <- reactive({ req(session$userData$RefinementReport())
-                                        req(input$ServerName)
+                                        req(input$SiteName)
 
                                         if (!is.null(session$userData$RefinementReport()))
                                         {
                                             session$userData$RefinementReport() %>%
-                                                pluck("Log", input$ServerName) %>%
+                                                pluck("Log", input$SiteName) %>%
                                                 filter(ProcessTopic != "COUNT")
                                         }
                                       })

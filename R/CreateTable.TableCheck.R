@@ -36,8 +36,8 @@ CreateTable.TableCheck <- function(TableData)
   # Process info on feature types for sensible printing
   FeatureTypes <- TableData$FeatureTypes %>%
                       rename_with(~ paste0(.x, ".TYPE"),
-                                  -ServerName) %>%
-                      mutate(across(.cols = -ServerName,
+                                  -SiteName) %>%
+                      mutate(across(.cols = -SiteName,
                                     .fns = ~ str_replace_all(string = .x,
                                                              pattern = c("character" = "chr",
                                                                          "double" = "dbl",
@@ -47,8 +47,8 @@ CreateTable.TableCheck <- function(TableData)
   # Process non-missing value rates for sensible printing
   NonMissingValueRates <- TableData$NonMissingValueRates %>%
                               rename_with(~ paste0(.x, ".NMVR"),
-                                          -ServerName) %>%
-                              mutate(across(.cols = -ServerName,
+                                          -SiteName) %>%
+                              mutate(across(.cols = -SiteName,
                                             .fns = function(.x)
                                                    {
                                                       # If rate is between 0% and 1%, display as '<1%', otherwise round to full numbers and add '%'
@@ -60,8 +60,8 @@ CreateTable.TableCheck <- function(TableData)
   # To enable value-dependent cell styling, create data.frame with features containing CSS code
   NonMissingValueRates_CSS <- TableData$NonMissingValueRates %>%
                                   rename_with(~ paste0("CellCSSCode.", .x, ".NMVR"),
-                                              -ServerName) %>%
-                                  mutate(across(.cols = -ServerName,
+                                              -SiteName) %>%
+                                  mutate(across(.cols = -SiteName,
                                                 .fns = function(.x)
                                                        {
                                                           # Convert decimal numbers between 0 and 1 into hexadecimal color codes ranging on a defined color palette
@@ -86,7 +86,7 @@ CreateTable.TableCheck <- function(TableData)
   RecordCounts <- TableData$TableRecordCounts
 
   # Before joining tables, create vector defining correct column order
-  ColumnOrder <- c("ServerName",
+  ColumnOrder <- c("SiteName",
                    names(RecordCounts)[-1],
                    rbind(FeatureNames,
                          names(FeatureTypes)[-1],
@@ -94,14 +94,14 @@ CreateTable.TableCheck <- function(TableData)
                          names(NonMissingValueRates_CSS)[-1]))
 
   TableDetails <- TableData$FeatureExistence %>%
-                      left_join(RecordCounts, by = join_by(ServerName)) %>%
-                      left_join(FeatureTypes, by = join_by(ServerName)) %>%
-                      left_join(NonMissingValueRates, by = join_by(ServerName)) %>%
-                      left_join(NonMissingValueRates_CSS, by = join_by(ServerName)) %>%
+                      left_join(RecordCounts, by = join_by(SiteName)) %>%
+                      left_join(FeatureTypes, by = join_by(SiteName)) %>%
+                      left_join(NonMissingValueRates, by = join_by(SiteName)) %>%
+                      left_join(NonMissingValueRates_CSS, by = join_by(SiteName)) %>%
                       select(all_of(ColumnOrder))
 
   HeaderColspans <- c(1, 1, rep.int(3, length(FeatureNames))) %>%
-                        set_names(c("ServerName", "RecordCount", FeatureNames))
+                        set_names(c("SiteName", "RecordCount", FeatureNames))
 
   return(list(TableDetails = TableDetails,
               HeaderColspans = HeaderColspans))

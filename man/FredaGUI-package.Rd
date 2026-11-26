@@ -4,14 +4,13 @@
 \name{FredaGUI-package}
 \alias{FredaGUI}
 \alias{FredaGUI-package}
-\title{FredaGUI: A Graphical User Interface for FREDA}
+\title{FredaGUI: FredaGUI}
 \description{
-Shiny app to facilitate working with dsFredaClient
+R Shiny apps as graphical user interface for FREDA: A tool for Federated Refinement and Exploration of Real-World Data
 }
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://ccphos.netlify.app/}
   \item \url{https://github.com/BastianReiter/FredaGUI}
 }
 
