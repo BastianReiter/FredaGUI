@@ -14,7 +14,6 @@ Imports:
     callr,
     DataEditR,
     dplyr,
-    DSI,
     DT,
     gt (>= 0.10.1),
     httpuv,
@@ -36,7 +35,5 @@ Depends:
     R (>= 2.10)
 LazyData: true
 Remotes: 
-    github::BastianReiter/dsCCPhosClient,
-    github::BastianReiter/dsFredaClient,
-    github::kcuilla/reactablefmtr
+    github::BastianReiter/Freda
 Config/roxygen2/version: 8.1.0
